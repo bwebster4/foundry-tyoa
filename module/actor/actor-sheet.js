@@ -13,7 +13,6 @@ export class TyoaActorSheet extends ActorSheet {
     data.editable = this.actor.sheet.isEditable;
 
     data.config = CONFIG.TYOA;
-    data.isNew = this.actor.isNew();
 
     return data;
   }

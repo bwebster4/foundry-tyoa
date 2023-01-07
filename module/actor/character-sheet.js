@@ -107,13 +107,6 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
     data.spells = sortedSpells;
   }
 
-  generateScores() {
-    new TyoaCharacterCreator(this.actor, {
-      top: this.position.top + 40,
-      left: this.position.left + (this.position.width - 400) / 2,
-    }).render(true);
-  }
-
   adjustCurrency() {
     new TyoaAdjustCurrency(this.actor, {
       top: this.position.top + 300,
@@ -376,10 +369,6 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       .find(".charges input")
       .click((ev) => ev.target.select())
       .change(this._onChargeChange.bind(this));
-
-    html.find("a[data-action='generate-scores']").click((ev) => {
-      this.generateScores(ev);
-    });
 
     html.find("a[data-action='currency-adjust']").click((ev) => {
       this.adjustCurrency(ev);

@@ -10,14 +10,12 @@ export class TyoaActor extends Actor {
     super.prepareData();
 
     // Compute modifiers from actor scores
-    this.computeModifiers();
     this.computeAC();
     this.computeEncumbrance();
     this._calculateMovement();
     this.computeResources();
     this.computeTreasure();
     this.computeEffort();
-    this.computeSaves();
     this.computeTotalSP();
     this.setXP();
     this.computePrepared();
@@ -56,23 +54,6 @@ export class TyoaActor extends Actor {
         speaker,
       });
     });
-  }
-
-  isNew() {
-    const data = this.system;
-    if (this.type == "character") {
-      let ct = 0;
-      Object.values(data.scores).forEach((el) => {
-        ct += el.value;
-      });
-      return ct == 0 ? true : false;
-    } else if (this.type == "monster") {
-      let ct = 0;
-      Object.values(data.saves).forEach((el) => {
-        ct += el.value;
-      });
-      return ct == 0 ? true : false;
-    }
   }
 
   getBank(value, options = {}) {
@@ -431,15 +412,15 @@ export class TyoaActor extends Actor {
     const rollLabels = [];
     const dmgLabels = [];
     const weaponShock = attData.item.system.shock.damage;
-    let statAttack, skillAttack, statValue, skillValue;
+    let skillAttack, skillValue;
     if (data.character) {
-      statAttack = attData.item.system.score;
       skillAttack = attData.item.system.skill;
-      skillValue = this.items.find(
+      let skill = this.items.find(
         (item) =>
           item.type === "skill" && item.name.toLowerCase() === skillAttack
-      ).system.ownedLevel;
-      statValue = this.system.scores[statAttack].mod;
+      )
+      if(skill) skillValue = skill.system.ownedLevel;
+      else skillValue = -1;
     }
 
     let readyState = "";
@@ -466,13 +447,7 @@ export class TyoaActor extends Actor {
     }
 
     if (data.character) {
-      if (data.warrior) {
-        const levelRoundedUp = Math.ceil(this.system.details.level / 2);
-        attData.item.system.shockTotal =
-          statValue + weaponShock + levelRoundedUp;
-      } else {
-        attData.item.system.shockTotal = statValue + weaponShock;
-      }
+      attData.item.system.shockTotal = weaponShock;
       if (attData.item.system.skillDamage) {
         attData.item.system.shockTotal =
           attData.item.system.shockTotal + skillValue;
@@ -497,8 +472,6 @@ export class TyoaActor extends Actor {
       )
         ? 0
         : -2;
-      rollParts.push(statValue);
-      rollLabels.push(`+${statValue} (${statAttack})`);
       if (skillValue == -1) {
         rollParts.push(unskilledAttack);
         rollLabels.push(`${unskilledAttack} (unskilled penalty)`);
@@ -515,8 +488,6 @@ export class TyoaActor extends Actor {
     let thac0 = data.thac0.value;
 
     if (data.character) {
-      dmgParts.push(statValue);
-      dmgLabels.push(`+${statValue} (${statAttack})`);
       if (data.warrior) {
         const levelRoundedUp = Math.ceil(data.details.level / 2);
         dmgParts.push(levelRoundedUp);
@@ -645,8 +616,11 @@ export class TyoaActor extends Actor {
     // Compute encumbrance
     let totalReadied = 0;
     let totalStowed = 0;
-    let maxReadied = Math.floor(data.scores.str.value / 2);
-    let maxStowed = data.scores.str.value;
+    let athleticsSkill = this.items.find((s) => s.name == "Athletics");
+    let athletics = -1;
+    if(athleticsSkill) athletics = athleticsSkill.ownedLevel;
+    let maxReadied = 5 + athletics;
+    let maxStowed = maxReadied * 2;
     const weapons = this.items.filter((w) => w.type == "weapon");
     const armors = this.items.filter((a) => a.type == "armor");
     const items = this.items.filter((i) => i.type == "item");
@@ -878,7 +852,7 @@ export class TyoaActor extends Actor {
     let baseAac = 10;
     let AacShieldMod = 0;
     let AacShieldNaked = 0;
-    let naked = baseAac + data.scores.dex.mod + data.aac.mod;
+    let naked = baseAac + data.aac.mod;
     let exertPenalty = 0;
     let sneakPenalty = 0;
 
@@ -905,9 +879,9 @@ export class TyoaActor extends Actor {
       }
     });
     if (AacShieldMod > 0) {
-      let shieldOnly = AacShieldNaked + data.scores.dex.mod + data.aac.mod;
+      let shieldOnly = AacShieldNaked + data.aac.mod;
       let shieldBonus =
-        baseAac + data.scores.dex.mod + data.aac.mod + AacShieldMod;
+        baseAac + data.aac.mod + AacShieldMod;
       if (shieldOnly > shieldBonus) {
         this.system.aac = { value: shieldOnly, shield: 0, naked };
       } else {
@@ -915,88 +889,13 @@ export class TyoaActor extends Actor {
       }
     } else {
       this.system.aac = {
-        value: baseAac + data.scores.dex.mod + data.aac.mod,
+        value: baseAac + data.aac.mod,
         naked,
         shield: 0,
       };
     }
     this.system.skills.sneakPenalty = sneakPenalty;
     this.system.skills.exertPenalty = exertPenalty;
-  }
-
-  computeModifiers() {
-    if (this.type != "character") return;
-
-    const data = this.system;
-    const scores = data.scores;
-
-    const standard = {
-      0: -2,
-      3: -2,
-      4: -1,
-      8: 0,
-      14: 1,
-      18: 2,
-    };
-
-    Object.keys(scores).map((score) => {
-      let newMod =
-        this.system.scores[score].tweak +
-        TyoaActor._valueFromTable(standard, scores[score].value);
-      this.system.scores[score].mod = newMod;
-    });
-
-    const capped = {
-      0: -2,
-      3: -2,
-      4: -1,
-      6: -1,
-      9: 0,
-      13: 1,
-      16: 1,
-      18: 2,
-    };
-  }
-
-  computeSaves() {
-    const data = this.system;
-    const saves = data.saves;
-    Object.keys(saves).forEach((s) => {
-      if (!saves[s].mod) {
-        saves[s].mod = 0;
-      }
-    });
-
-    if (this.type != "character") {
-      const monsterHD = data.hp.hd.toLowerCase().split("d");
-      Object.keys(saves).forEach(
-        (s) =>
-        (saves[s].value =
-          Math.max(15 - Math.floor(monsterHD[0] / 2), 2) + saves[s].mod)
-      );
-    } else {
-      let charLevel = data.details.level;
-      let evasionVal =
-        16 -
-        Math.max(data.scores.int.mod, data.scores.dex.mod) -
-        charLevel +
-        data.saves.evasion.mod;
-      let physicalVal =
-        16 -
-        Math.max(data.scores.con.mod, data.scores.str.mod) -
-        charLevel +
-        data.saves.physical.mod;
-      let mentalVal =
-        16 -
-        Math.max(data.scores.wis.mod, data.scores.cha.mod) -
-        charLevel +
-        data.saves.mental.mod;
-      let luckVal = 16 - charLevel + data.saves.luck.mod;
-      this.system.saves.evasion.value = evasionVal;
-      this.system.saves.physical.value = physicalVal;
-      this.system.saves.mental.value = mentalVal;
-      this.system.saves.luck.value = luckVal;
-    }
   }
 
   // Creates a list of skills based on the following list. Was used to generate
@@ -1042,7 +941,6 @@ export class TyoaActor extends Actor {
         name: game.i18n.localize(skillKey),
         data: {
           ownedLevel: -1,
-          score: "int",
           description: game.i18n.localize(skillDesc),
           skillDice: "2d6",
           secondary: false,

@@ -85,7 +85,6 @@ export class TyoaItem extends Item {
   async rollSkill(options = {}) {
     const template = "systems/tyoa/templates/items/dialogs/roll-skill.html";
     const dialogData = {
-      defaultScore: this.system.score,
       dicePool: this.system.skillDice,
       name: this.name,
       rollMode: game.settings.get("core", "rollMode"),
@@ -99,7 +98,6 @@ export class TyoaItem extends Item {
 
     const data = this.system;
     const skillName = this.name;
-    const score = this.actor.system.scores[data.score];
 
     // Determine if armor penalty applies
     let armorPenalty = 0;
@@ -124,14 +122,13 @@ export class TyoaItem extends Item {
     }
 
     // Assemble dice pool
-    const rollParts = [data.skillDice, score.mod, skillLevel];
+    const rollParts = [data.skillDice, skillLevel];
     if (armorPenalty < 0) {
       rollParts.push(armorPenalty);
     }
 
     if (options.skipDialog) {
-      const attrKey = `TYOA.scores.${data.score}.short`;
-      const rollTitle = `${game.i18n.localize(attrKey)}/${this.name}`;
+      const rollTitle = `${this.name}`;
 
       let rollData = {
         parts: rollParts,
@@ -150,13 +147,7 @@ export class TyoaItem extends Item {
     const _doRoll = async (html) => {
       const form = html[0].querySelector("form");
       rollParts[0] = form.skillDice.value;
-      rollParts[1] = this.actor.system.scores[form.score.value].mod;
-      if (!score) {
-        ui.notifications.error("Unable to find score on char.");
-        return;
-      }
-      const attrKey = `TYOA.scores.${form.score.value}.short`;
-      const rollTitle = `${game.i18n.localize(attrKey)}/${this.name}`;
+      const rollTitle = `${this.name}`;
       let rollData = {
         parts: rollParts,
         data: newData,

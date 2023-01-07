@@ -1,22 +1,8 @@
 export const TYOA = {
-  scores: {
-    str: "TYOA.scores.str.short",
-    dex: "TYOA.scores.dex.short",
-    con: "TYOA.scores.con.short",
-    int: "TYOA.scores.int.short",
-    wis: "TYOA.scores.wis.short",
-    cha: "TYOA.scores.cha.short",
-  },
   roll_type: {
     result: "=",
     above: "≥",
     below: "≤"
-  },
-  saves: {
-    evasion: "TYOA.saves.evasion",
-    mental: "TYOA.saves.mental",
-    physical: "TYOA.saves.physical",
-    luck: "TYOA.saves.luck",
   },
   skills: {
     admin: "TYOA.skills.administer",

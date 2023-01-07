@@ -7,10 +7,6 @@
           "enabled": false,
           "wage": ""
         },
-        "ac": {
-          "value": 0,
-          "mod": 0
-        },
         "aac": {
           "value": 0,
           "mod": 0
@@ -146,44 +142,6 @@
         "sneakPenalty": 0,
         "unspent": 0
       },
-      "scores": {
-        "str": {
-          "value": 0,
-          "bonus": 0,
-          "mod": 0,
-          "tweak": 0
-        },
-        "int": {
-          "value": 0,
-          "bonus": 0,
-          "mod": 0,
-          "tweak": 0
-        },
-        "wis": {
-          "value": 0,
-          "bonus": 0,
-          "mod": 0,
-          "tweak": 0
-        },
-        "dex": {
-          "value": 0,
-          "bonus": 0,
-          "mod": 0,
-          "tweak": 0
-        },
-        "con": {
-          "value": 0,
-          "bonus": 0,
-          "mod": 0,
-          "tweak": 0
-        },
-        "cha": {
-          "value": 0,
-          "bonus": 0,
-          "mod": 0,
-          "tweak": 0
-        }
-      },
       "encumbrance": {
         "readied": {
           "max": 5,
@@ -286,7 +244,6 @@
     },
     "shockTotal": 0,
     "skill": "stab",
-    "score": "str",
     "tags": [],
     "slow": false,
     "missile": false,
@@ -305,7 +262,6 @@
   },
   "armor": {
     "description": "",
-    "ac": 9,
     "aac": {
       "value": 10,
       "mod": 0 },
@@ -345,7 +301,6 @@
   "skill": {
     "description": "",
     "ownedLevel": -1,
-    "score": "int",
     "skillDice": "2d6",
     "secondary": false
   },

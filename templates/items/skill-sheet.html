@@ -17,17 +17,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label><b>{{localize 'TYOA.attribute'}}</b></label>
-                    <div class="form-fields">
-                        <select name="system.score">
-                            {{#select system.score}} {{#each config.scores as
-                            |stat a|}}
-                            <option value="{{a}}">{{stat}}</option>
-                            {{/each}} {{/select}}
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
                     <label><b>{{localize 'TYOA.dialog.skillDice'}}</b></label>
                     <div class="form-fields">
                         <select id="skillDice" name="system.skillDice">

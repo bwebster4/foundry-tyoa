@@ -123,7 +123,6 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
     } else {
       data.system.details.instinctTable.link = await TextEditor.enrichHTML(data.system.details.instinctTable.table, { async: true });
     }
-    data.isNew = this.actor.isNew();
 
     data.enrichedBiography = await TextEditor.enrichHTML(
       this.object.system.details.biography,

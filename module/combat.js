@@ -11,16 +11,17 @@ export class TyoaCombat {
       const group = cbt.getFlag("tyoa", "group");
       groups[group] = { present: true };
       data.combatants.push(cbt);
-      let alert = cbt.actor.items.filter((a) => a.name == "Alert");
-      if (alert.length > 0) {
-        alertGroups[group] = true;
-      }
-      if (cbt.actor.system.scores) {
-        let dexMod = cbt.actor.system.scores.dex.mod;
+      // let alert = cbt.actor.items.filter((a) => a.name == "Alert");
+      // if (alert.length > 0) {
+      //   alertGroups[group] = true;
+      // }
+      let observance  = cbt.actor.items.find((i) => i.name == "Observance")
+      if (observance) {
+        let level = observance.ownedLevel;
         if (groupMods[group]) {
-          groupMods[group] = Math.max(dexMod, groupMods[group]);
+          groupMods[group] = Math.max(level, groupMods[group]);
         } else {
-          groupMods[group] = dexMod;
+          groupMods[group] = level;
         }
       }
     });
