@@ -10,41 +10,58 @@
     </div>
   </header>
   <section class="sheet-body">
-    <div class="description resizable-editor">
-      {{editor content=data.description target="data.description" button=true
-      owner=owner editable=editable}}
+    <div class="description">
+      {{editor system.description target="system.description" button=true owner=owner editable=editable
+        async=true}}
     </div>
     <div class="flexrow">
       <div class="stats">
         <div class="form-group">
-          <label>{{localize 'WWN.Attack'}}</label>
+          <label title="{{localize 'WWN.HealthLong'}}">{{localize 'WWN.HealthShort'}}</i></label>
           <div class="form-fields">
-            <input type="text" name="data.attack" value="{{data.attack}}" data-dtype="String" />
+            <input type="number" name="system.health.value" value="{{system.health.value}}" data-dtype="Number"
+              title="{{localize 'WWN.Health'}}" />
+            /
+            <input type="number" name="system.health.max" value="{{system.health.max}}" data-dtype="Number"
+              title="{{localize 'WWN.HealthMax'}}" />
           </div>
         </div>
         <div class="form-group">
-          <label title="{{localize 'WWN.HealthLong'}}">{{localize 'WWN.HealthShort'}}</i></label>
+          <label>{{localize 'WWN.faction.rating'}}</i></label>
           <div class="form-fields">
-            <input type="number" name="data.hp.value" value="{{data.hp.value}}" data-dtype="Number"
-              title="{{localize 'WWN.Health'}}" />
-            /
-            <input type="number" name="data.hp.max" value="{{data.hp.max}}" data-dtype="Number"
-              title="{{localize 'WWN.HealthMax'}}" />
+            <select class="" name="system.rating">
+              {{#select system.rating}}
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              {{/select}}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>{{localize 'WWN.faction.location'}}</i></label>
+          <div class="form-fields">
+            <input type="text" name="system.location" value="{{system.location}}" />
           </div>
         </div>
         <div class="form-group">
           <label>{{localize 'WWN.asset.cost'}}</i></label>
           <div class="form-fields">
-            <input type="number" name="data.cost" value="{{data.cost}}" data-dtype="Number" />
+            <input type="number" name="system.cost" value="{{system.cost}}" data-dtype="Number" />
           </div>
         </div>
         <div class="form-group">
           <label>{{localize 'WWN.asset.type'}}</label>
           <div class="form-fields">
-            <select name="data.type">
-              {{#select data.type}}
+            <select name="system.type">
+              {{#select system.type}}
               {{#each config.assetTypes as |type a|}}
-              <option value="{{a}}">{{type}}</option>
+              <option value="{{a}}">{{localize type}}</option>
               {{/each}}
               {{/select}}
             </select>
@@ -53,8 +70,8 @@
         <div class="form-group">
           <label>{{localize 'WWN.skills.magic'}}</label>
           <div class=form-fields>
-            <select name="data.magic">
-              {{#select data.magic}}
+            <select name="system.magic">
+              {{#select system.magic}}
               {{#each config.assetMagic as |magic a|}}
               <option value="{{a}}">{{magic}}</option>
               {{/each}}
@@ -62,41 +79,128 @@
             </select>
           </div>
         </div>
+        <!--income -->
+        <div class="form-group">
+          <label>{{localize 'WWN.faction.income'}}</label>
+          <div class=form-fields>
+            <input type="number" name="system.income" value="{{system.income}}" data-dtype="Number" />
+          </div>
+        </div>
+
+        <!--maintenance -->
+        <div class="form-group">
+          <label>{{localize 'WWN.faction.maintenance'}}</label>
+          <div class=form-fields>
+            <input type="number" name="system.maintenance" value="{{system.maintenance}}" data-dtype="Number" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>{{localize 'WWN.faction.note'}}</i></label>
+          <div class="form-fields">
+            <input type="text" name="system.note" value="{{system.note}}" />
+          </div>
+        </div>
+
+
+        <div class="form-group">
+          <label>{{localize 'WWN.faction.turnRoll'}}</i></label>
+          <div class="form-fields">
+            <input type="text" name="system.turnRoll" value="{{system.turnRoll}}" />
+          </div>
+        </div>
       </div>
       <div class="flexrow item-footer">
         <div class="stats">
           <div class="form-group">
-            <label>{{localize 'WWN.asset.counter'}}</label>
+            <label>{{localize 'WWN.Attack'}}</label>
             <div class="form-fields">
-              <input type="text" name="data.counter" value="{{data.counter}}" data-dtype="String" />
+              <input type="text" name="system.attackDamage" value="{{system.attackDamage}}" data-dtype="String" />
             </div>
           </div>
           <div class="form-group">
+            <label>{{localize 'WWN.faction.attackSource'}}</label>
+            <div class="form-fields">
+              <select class="" name="system.attackSource">
+                {{#select system.attackSource}}
+                <option value=""></option>
+                <option value="cunning">Cunning</option>
+                <option value="force">Force</option>
+                <option value="wealth">Wealth</option>
+                {{/select}}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>{{localize 'WWN.faction.attackTarget'}}</label>
+            <div class="form-fields">
+              <select class="" name="system.attackTarget">
+                {{#select system.attackTarget}}
+                <option value=""></option>
+                <option value="cunning">Cunning</option>
+                <option value="force">Force</option>
+                <option value="wealth">Wealth</option>
+                {{/select}}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{localize 'WWN.faction.attackSpecial'}}</i></label>
+            <div class="form-fields">
+              <input type="text" name="system.attackSpecial" value="{{system.attackSpecial}}" />
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label>{{localize 'WWN.faction.locationRoll'}}</i></label>
+            <div class="form-fields">
+              <input type="text" name="system.locationRoll" value="{{system.locationRoll}}" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{localize 'WWN.asset.counter'}}</label>
+            <div class="form-fields">
+              <input type="text" name="system.counter" value="{{system.counter}}" data-dtype="String" />
+            </div>
+          </div>
+
+          <div class="form-group">
             <label>{{localize 'WWN.asset.BoIHint'}}</label>
             <div class="form-fields">
-              <input type="checkbox" name="data.BOI" value="{{data.BOI}}" {{checked data.BOI}} data-dtype="Boolean"
-                title="{{localize 'WWN.items.SkillDamageLong'}}" />
+              <input type="checkbox" name="system.baseOfInfluence" value="{{system.baseOfInfluence}}" {{checked
+                system.baseOfInfluence}} data-dtype="Boolean" title="{{localize 'WWN.items.BoIHint'}}" />
             </div>
           </div>
           <div class="form-group">
             <label>{{localize 'WWN.asset.subtle'}}</label>
             <div class="form-fields">
-              <input type="checkbox" name="data.subtle" value="{{data.subtle}}" {{checked data.subtle}}
-                data-dtype="Boolean" title="{{localize 'WWN.items.SkillDamageLong'}}" />
+              <input type="checkbox" name="system.subtle" value="{{system.subtle}}" {{checked system.subtle}}
+                data-dtype="Boolean" />
             </div>
           </div>
           <div class="form-group">
             <label>{{localize 'WWN.asset.stealthed'}}</label>
             <div class="form-fields">
-              <input type="checkbox" name="data.stealth" value="{{data.stealth}}" {{checked data.stealth}}
-                data-dtype="Boolean" title="{{localize 'WWN.items.SkillDamageLong'}}" />
+              <input type="checkbox" name="system.stealthed" value="{{system.stealthed}}" {{checked system.stealthed}}
+                data-dtype="Boolean" />
             </div>
           </div>
           <div class="form-group">
             <label>{{localize 'WWN.asset.special'}}</label>
             <div class="form-fields">
-              <input type="checkbox" name="data.special" value="{{data.special}}" {{checked data.special}}
-                data-dtype="Boolean" title="{{localize 'WWN.items.SkillDamageLong'}}" />
+              <input type="checkbox" name="system.special" value="{{system.special}}" {{checked system.special}}
+                data-dtype="Boolean" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{localize 'WWN.faction.unusable'}}</label>
+            <div class="form-fields">
+              <input type="checkbox" name="system.unusable" value="{{system.unusable}}" {{checked system.unusable}}
+                data-dtype="Boolean" />
             </div>
           </div>
         </div>

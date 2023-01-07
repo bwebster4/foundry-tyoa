@@ -7,7 +7,7 @@ export const registerSettings = function () {
     scope: "client",
     type: Boolean,
     config: true,
-    onChange: _ => window.location.reload()
+    requiresReload: true
   });
 
   game.settings.register("wwn", "initiative", {
@@ -21,7 +21,7 @@ export const registerSettings = function () {
       individual: "WWN.Setting.InitiativeIndividual",
       group: "WWN.Setting.InitiativeGroup",
     },
-    onChange: _ => window.location.reload()
+    requiresReload: true
   });
 
   game.settings.register("wwn", "rerollInitiative", {
@@ -49,7 +49,7 @@ export const registerSettings = function () {
       movewwn: "WWN.Setting.MoveWWN",
       movebx: "WWN.Setting.MoveBX",
     },
-    onChange: _ => window.location.reload()
+    requiresReload: true
   });
 
   game.settings.register("wwn", "showMovement", {
@@ -59,7 +59,7 @@ export const registerSettings = function () {
     scope: "world",
     type: Boolean,
     config: true,
-    onChange: _ => window.location.reload()
+    requiresReload: true
   });
 
   game.settings.register("wwn", "morale", {
@@ -83,29 +83,10 @@ export const registerSettings = function () {
   game.settings.register("wwn", "languageList", {
     name: game.i18n.localize("WWN.Languages"),
     hint: game.i18n.localize("WWN.LanguagesHint"),
-    default: [
-      "Trade Cant",
-      "Ancient Vothian",
-      "Old Vothian",
-      "Modern Vothian",
-      "Ancient Olok",
-      "Brass Speech",
-      "Ancient Lin",
-      "Emedian",
-      "Ancient Osrin",
-      "Thurian",
-      "Ancient Khalan",
-      "Llaigisan",
-      "Anak Speech",
-      "Predecessant",
-      "Abased",
-      "Recurrent",
-      "Deep Speech"
-    ],
+    default: "Trade Cant,Ancient Vothian,Old Vothian,Modern Vothian,Ancient Olok,Brass Speech,Ancient Lin,Emedian,Ancient Osrin,Thurian,Ancient Khalan,Llaigisan,Anak Speech,Predecessant,Abased,Recurrent,Deep Speech",
     scope: "world",
     type: String,
     config: true,
-    onChange: _ => window.location.reload()
   });
 
   game.settings.register("wwn", "xpConfig", {
@@ -120,7 +101,7 @@ export const registerSettings = function () {
       xpSlow: "WWN.Setting.xpSlow",
       xpCustom: "WWN.Setting.xpCustom"
     },
-    onChange: _ => window.location.reload()
+    requiresReload: true
   });
 
   game.settings.register("wwn", "xpCustomList", {
@@ -144,7 +125,7 @@ export const registerSettings = function () {
     scope: "world",
     type: String,
     config: true,
-    onChange: _ => window.location.reload()
+    requiresReload: true
   });
 
   game.settings.register("wwn", "currencyTypes", {
@@ -158,7 +139,7 @@ export const registerSettings = function () {
       currencywwn: "WWN.Setting.CurrencyWWN",
       currencybx: "WWN.Setting.CurrencyBX",
     },
-    onChange: _ => window.location.reload()
+    requiresReload: true
   });
 
   game.settings.register("wwn", "systemMigrationVersion", {

@@ -24,77 +24,103 @@ export class WwnItem extends Item {
     return super.create(data, context);
   }
 
+  prepareData() {
+    super.prepareData();
+  }
+
+  async prepareDerivedData() {
+    const itemData = this?.system;
+
+    // Rich text description
+      itemData.enrichedDescription = await TextEditor.enrichHTML(
+        itemData.description,
+        { async: true }
+      );
+  }
+
   static chatListeners(html) {
     html.on("click", ".card-buttons button", this._onChatCardAction.bind(this));
     html.on("click", ".item-name", this._onChatCardToggleContent.bind(this));
   }
 
   getChatData(htmlOptions) {
-    const data = duplicate(this.data.data);
+    const itemData = this.system;
 
     // Rich text description
-    data.description = TextEditor.enrichHTML(data.description, htmlOptions);
+    // data.description = TextEditor.enrichHTML(data.description, htmlOptions);
 
     // Item properties
     const props = [];
     const labels = this.labels;
 
-    if (this.data.type == "weapon") {
-      data.tags.forEach((t) => props.push(t.value));
+    if (this.type == "weapon") {
+      itemData.tags.forEach((t) => props.push(t.value));
     }
-    if (this.data.type == "spell") {
-      props.push(`${data.class} ${data.lvl}`, data.range, data.duration);
+    if (this.type == "spell") {
+      props.push(
+        `${itemData.class} ${itemData.lvl}`,
+        itemData.range,
+        itemData.duration
+      );
     }
-    if (data.hasOwnProperty("equipped")) {
-      props.push(data.equipped ? "Equipped" : "Not Equipped");
+    if (itemData.hasOwnProperty("equipped")) {
+      props.push(itemData.equipped ? "Equipped" : "Not Equipped");
     }
-    if (data.hasOwnProperty("stowed")) {
-      props.push(data.stowed ? "Stowed" : "Not Stowed");
+    if (itemData.hasOwnProperty("stowed")) {
+      props.push(itemData.stowed ? "Stowed" : "Not Stowed");
     }
-    if (data.hasOwnProperty("prepared")) {
-      props.push(data.prepared ? "Prepared" : "Not Prepared");
+    if (itemData.hasOwnProperty("prepared")) {
+      props.push(itemData.prepared ? "Prepared" : "Not Prepared");
     }
 
     // Filter properties and return
-    data.properties = props.filter((p) => !!p);
-    return data;
+    itemData.properties = props.filter((p) => !!p);
+    return itemData;
+  }
+
+  async rollAsset(options = {}) {
+    ui.notifications.info("TODO");
   }
 
   async rollSkill(options = {}) {
     const template = "systems/wwn/templates/items/dialogs/roll-skill.html";
     const dialogData = {
-      defaultScore: this.data.data.score,
-      dicePool: this.data.data.skillDice,
+      defaultScore: this.system.score,
+      dicePool: this.system.skillDice,
       name: this.name,
       rollMode: game.settings.get("core", "rollMode"),
       rollModes: CONFIG.Dice.rollModes,
     };
     const newData = {
-      actor: this.actor.data,
-      item: this.data,
-      roll: {
-      },
+      actor: this.actor,
+      item: this,
+      roll: {},
     };
 
-    const data = this.data.data;
-    const skillName = this.data.name;
-    let score = this.actor.data.data.scores[data.score];
+    const data = this.system;
+    const skillName = this.name;
+    const score = this.actor.system.scores[data.score];
 
     // Determine if armor penalty applies
     let armorPenalty = 0;
     if (skillName == "Exert") {
-      armorPenalty -= this.parent.data.data.skills.exertPenalty;
+      armorPenalty -= this.parent.system.skills.exertPenalty;
     } else if (skillName == "Sneak") {
-      armorPenalty -= this.parent.data.data.skills.sneakPenalty;
+      armorPenalty -= this.parent.system.skills.sneakPenalty;
     }
 
     // Determine skill level, taking into account polymath and unskilled penalties
     let skillLevel;
-    const poly = this.parent.items.find(i => i.name == "Polymath");
-    if (!poly || skillName == "Shoot" || skillName == "Stab" || skillName == "Punch") {
+    const poly = this.parent.items.find((i) => i.name == "Polymath");
+    if (
+      !poly ||
+      skillName == "Shoot" ||
+      skillName == "Stab" ||
+      skillName == "Punch"
+    ) {
       skillLevel = data.ownedLevel;
     } else {
-      skillLevel = Math.max(poly.data.data.ownedLevel - 1, data.ownedLevel);
+      skillLevel = Math.max(poly.system.ownedLevel - 1, data.ownedLevel);
     }
 
     // Assemble dice pool
@@ -105,7 +131,7 @@ export class WwnItem extends Item {
 
     if (options.skipDialog) {
       const attrKey = `WWN.scores.${data.score}.short`;
-      const rollTitle = `${this.name}/${game.i18n.localize(attrKey)}`
+      const rollTitle = `${game.i18n.localize(attrKey)}/${this.name}`;
 
       let rollData = {
         parts: rollParts,
@@ -114,7 +140,7 @@ export class WwnItem extends Item {
         flavor: null,
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
         form: null,
-        rollTitle: rollTitle
+        rollTitle: rollTitle,
       };
       return WwnDice.sendRoll(rollData);
     }
@@ -123,13 +149,14 @@ export class WwnItem extends Item {
     const title = `${game.i18n.localize("WWN.Roll")} ${this.name}`;
     const _doRoll = async (html) => {
       const form = html[0].querySelector("form");
-      rollParts[1] = this.actor.data.data.scores[form.score.value].mod;
+      rollParts[0] = form.skillDice.value;
+      rollParts[1] = this.actor.system.scores[form.score.value].mod;
       if (!score) {
         ui.notifications.error("Unable to find score on char.");
         return;
       }
       const attrKey = `WWN.scores.${form.score.value}.short`;
-      const rollTitle = `${this.name}/${game.i18n.localize(attrKey)}`
+      const rollTitle = `${game.i18n.localize(attrKey)}/${this.name}`;
       let rollData = {
         parts: rollParts,
         data: newData,
@@ -137,7 +164,7 @@ export class WwnItem extends Item {
         flavor: null,
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
         form: form,
-        rollTitle: rollTitle
+        rollTitle: rollTitle,
       };
       WwnDice.sendRoll(rollData);
     };
@@ -151,7 +178,7 @@ export class WwnItem extends Item {
       cancel: {
         icon: '<i class="fas fa-times"></i>',
         label: game.i18n.localize("WWN.Cancel"),
-        callback: (html) => { },
+        callback: (html) => {},
       },
     };
 
@@ -162,22 +189,21 @@ export class WwnItem extends Item {
         content: html,
         buttons: buttons,
         default: "ok",
-        close: () => {
-        },
+        close: () => {},
       }).render(true);
     });
   }
 
   rollWeapon(options = {}) {
-    let isNPC = this.actor.data.type != "character";
+    let isNPC = this.actor.type != "character";
     const targets = 5;
-    const data = this.data.data;
+    const data = this.system;
     let type = isNPC ? "attack" : "melee";
     const rollData = {
-      item: this.data,
-      actor: this.actor.data,
+      item: this,
+      actor: this.actor,
       roll: {
-        save: this.data.data.save,
+        save: this.system.save,
         target: null,
       },
     };
@@ -214,7 +240,7 @@ export class WwnItem extends Item {
   }
 
   async rollFormula(options = {}) {
-    const data = this.data.data;
+    const data = this.system;
     if (!data.roll) {
       throw new Error("This Item does not have a formula to roll!");
     }
@@ -225,8 +251,8 @@ export class WwnItem extends Item {
     let type = data.rollType;
 
     const newData = {
-      actor: this.actor.data,
-      item: this.data,
+      actor: this.actor,
+      item: this,
       roll: {
         type: type,
         target: data.rollTarget,
@@ -247,12 +273,13 @@ export class WwnItem extends Item {
   }
 
   spendSpell() {
-    const spellsLeft = this.actor.data.data.spells.perDay.value;
-    const spellsMax = this.actor.data.data.spells.perDay.max;
-    if (spellsLeft + 1 > spellsMax) return ui.notifications.warn("No spell slots remaining!");
+    const spellsLeft = this.actor.system.spells.perDay.value;
+    const spellsMax = this.actor.system.spells.perDay.max;
+    if (spellsLeft + 1 > spellsMax)
+      return ui.notifications.warn("No spell slots remaining!");
     this.actor
       .update({
-        "data.spells.perDay.value": spellsLeft + 1,
+        "system.spells.perDay.value": spellsLeft + 1,
       })
       .then(() => {
         this.show({ skipDialog: true });
@@ -260,21 +287,26 @@ export class WwnItem extends Item {
   }
 
   spendArt() {
-    if (this.data.data.time) {
-      const sourceName = Object.keys(this.actor.data.data.classes).find(source => this.actor.data.data.classes[source].name === this.data.data.source);
-      if (sourceName === undefined) return ui.notifications.warn(`Please add ${this.data.data.source} as a caster class in the Tweaks menu.`);
+    if (this.system.time) {
+      const sourceName = Object.keys(this.actor.system.classes).find(
+        (source) =>
+          this.actor.system.classes[source].name === this.system.source
+      );
+      if (sourceName === undefined)
+        return ui.notifications.warn(
+          `Please add ${this.system.source} as a caster class in the Tweaks menu.`
+        );
 
-      const currEffort = this.data.data.effort;
-      const sourceVal = this.actor.data.data.classes[sourceName].value;
-      const sourceMax = this.actor.data.data.classes[sourceName].max;
+      const currEffort = this.system.effort;
+      const sourceVal = this.actor.system.classes[sourceName].value;
+      const sourceMax = this.actor.system.classes[sourceName].max;
 
-      if (sourceVal + 1 > sourceMax) return ui.notifications.warn("No Effort remaining!");
+      if (sourceVal + 1 > sourceMax)
+        return ui.notifications.warn("No Effort remaining!");
 
-      this
-        .update({ "data.effort": currEffort + 1 })
-        .then(() => {
-          this.show({ skipDialog: true });
-        });
+      this.update({ "system.effort": currEffort + 1 }).then(() => {
+        this.show({ skipDialog: true });
+      });
     } else {
       this.show({ skipDialog: true });
     }
@@ -290,8 +322,8 @@ export class WwnItem extends Item {
       return `<li class='tag'>${fa}${tag}</li>`;
     };
 
-    const data = this.data.data;
-    switch (this.data.type) {
+    const data = this.system;
+    switch (this.system.type) {
       case "weapon":
         let wTags = formatTag(data.damage, "fa-tint");
         data.tags.forEach((t) => {
@@ -334,7 +366,7 @@ export class WwnItem extends Item {
   }
 
   pushTag(values) {
-    const data = this.data.data;
+    const data = this.system;
     let update = [];
     if (data.tags) {
       update = duplicate(data.tags);
@@ -371,16 +403,16 @@ export class WwnItem extends Item {
       update = values;
     }
     newData.tags = update;
-    return this.update({ data: newData });
+    return this.update({ system: newData });
   }
 
   popTag(value) {
-    const data = this.data.data;
+    const data = this.system;
     let update = data.tags.filter((el) => el.value != value);
     let newData = {
       tags: update,
     };
-    return this.update({ data: newData });
+    return this.update({ system: newData });
   }
 
   roll() {
@@ -403,6 +435,9 @@ export class WwnItem extends Item {
       case "skill":
         this.rollSkill();
         break;
+      case "asset":
+        this.rollAsset();
+        break;
     }
   }
 
@@ -416,12 +451,12 @@ export class WwnItem extends Item {
     const templateData = {
       actor: this.actor,
       tokenId: token ? `${token.parent.id}.${token.id}` : null,
-      item: foundry.utils.duplicate(this.data),
+      item: foundry.utils.duplicate(this),
       data: this.getChatData(),
       labels: this.labels,
       isHealing: this.isHealing,
       hasDamage: this.hasDamage,
-      isSpell: this.data.type === "spell",
+      isSpell: this.type === "spell",
       hasSave: this.hasSave,
       config: CONFIG.WWN,
     };

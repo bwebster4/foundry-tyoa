@@ -414,6 +414,13 @@
     border-bottom: none;
     margin: 3px 0;
   }
+  
+  .wwn.sheet.actor .sheet-body .inventory .field-xlong {
+    font-size: 12px;
+    flex-basis: 200px;
+    flex-grow: 0;
+    text-align: center;
+  }
   .wwn.sheet.actor .sheet-body .inventory .field-short {
     font-size: 12px;
     flex-basis: 45px;
@@ -451,6 +458,10 @@
     flex-grow: 0;
     text-align: right;
     margin-right: 1px;
+  }
+  
+  .wwn.sheet.actor .sheet-body .inventory .item-controls .item-off {
+    color: rgba(0, 0, 0, 0.2);
   }
   .wwn.sheet.actor .sheet-body .inventory .item-controls .item-unequipped {
     color: rgba(0, 0, 0, 0.2);
@@ -664,6 +675,7 @@
   .wwn.dialog.party-sheet .actor-list .actor .field-img {
     flex: 0 0 50px;
     position: relative;
+    object-fit: contain;
   }
   .wwn.dialog.party-sheet .actor-list .actor .field-img:hover .img-btns button {
     display: block;
@@ -1228,11 +1240,6 @@
     border-bottom: none;
     margin: auto 0;
   }
-  .wwn.sheet.item .sheet-body .stats .form-group .form-fields.range .sep {
-    flex: 0 0 1px;
-    background: #7a7971;
-    margin: 4px 0;
-  }
   .wwn.sheet.item .sheet-body .stats .form-fields.attack-type {
     text-align: center;
     padding: 2px;
@@ -1251,7 +1258,7 @@
   }
   .wwn.sheet.item .sheet-body .stats .form-group label {
     line-height: 21px;
-    min-width: 145px;
+    min-width: 135px;
     display: inline-block;
   }
   .wwn.sheet.item .sheet-body .stats .form-group .form-fields {
@@ -1272,36 +1279,25 @@
     height: 18px;
   }
   .wwn.sheet.item .sheet-body .description .editor {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    flex-shrink: 1;
-    height: auto;
-    min-height: 130px;
+    min-height: 200px;
     margin-bottom: 10px;
-    flex-basis: 100%;
   }
   .wwn.sheet.item .sheet-body .item-footer {
     justify-content: center;
     margin-bottom: 15px;
     justify-self: flex-end;
+    bottom: 0;
+    position: sticky;
   }
   .wwn.sheet.item .sheet-body .flexrow.card-body {
     flex-direction: column;
     justify-content: space-between;
   }
   .wwn.sheet.item .sheet-body .description .editor .editor-content {
-    padding: 0 5px;
-    flex-grow: 1;
-    flex-shrink: 1;
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    min-height: 130px;
+    min-height: 200px;
     margin-bottom: 10px;
-    flex-basis: 100%;
   }
-  
+  /* TODO: Fix item description sizing */
   .wwn.actor.monster {
     min-height: 565px;
     min-width: 480px;
@@ -1323,7 +1319,7 @@
     color: rgba(0, 0, 0, 0.9);
   }
   .wwn.actor.monster .sheet-body .editor {
-    height: 380px;
+    height: 350px;
   }
   .wwn.actor.monster .sheet-body .attributes-tab {
     display: flex;

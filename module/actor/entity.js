@@ -8,17 +8,13 @@ export class WwnActor extends Actor {
 
   prepareData() {
     super.prepareData();
-    const data = this.data.data;
-
-    if (this.data.type === "faction" || this.data.type === "location") {
-      return;
-    }
 
     // Compute modifiers from actor scores
     this.computeModifiers();
     this.computeAC();
     this.computeEncumbrance();
     this._calculateMovement();
+    this.computeResources();
     this.computeTreasure();
     this.computeEffort();
     this.computeSaves();
@@ -29,26 +25,27 @@ export class WwnActor extends Actor {
   }
 
   async createEmbeddedDocuments(embeddedName, data = [], context = {}) {
+    if (!game.user.isGM && !this.isOwner) return;
     data.map((item) => {
       if (item.img === undefined) {
         item.img = WwnItem.defaultIcons[item.type];
       }
     });
-    return super.createEmbeddedDocuments(embeddedName, data, context);
+    super.createEmbeddedDocuments(embeddedName, data, context);
   }
 
   /* -------------------------------------------- */
   /*  Socket Listeners and Handlers
     /* -------------------------------------------- */
   getExperience(value, options = {}) {
-    if (this.data.type != "character") {
+    if (this.type != "character") {
       return;
     }
     let modified = Math.floor(
-      value + (this.data.data.details.xp.bonus * value) / 100
+      value + (this.system.details.xp.bonus * value) / 100
     );
     return this.update({
-      "data.details.xp.value": modified + this.data.data.details.xp.value,
+      "system.details.xp.value": modified + this.system.details.xp.value,
     }).then(() => {
       const speaker = ChatMessage.getSpeaker({ actor: this });
       ChatMessage.create({
@@ -61,12 +58,29 @@ export class WwnActor extends Actor {
     });
   }
 
+  isNew() {
+    const data = this.system;
+    if (this.type == "character") {
+      let ct = 0;
+      Object.values(data.scores).forEach((el) => {
+        ct += el.value;
+      });
+      return ct == 0 ? true : false;
+    } else if (this.type == "monster") {
+      let ct = 0;
+      Object.values(data.saves).forEach((el) => {
+        ct += el.value;
+      });
+      return ct == 0 ? true : false;
+    }
+  }
+
   getBank(value, options = {}) {
-    if (this.data.type != "character") {
+    if (this.type != "character") {
       return;
     }
     return this.update({
-      "data.currency.bank": value + this.data.data.currency.bank,
+      "system.currency.bank": value + this.system.currency.bank,
     }).then(() => {
       const speaker = ChatMessage.getSpeaker({ actor: this });
       ChatMessage.create({
@@ -79,29 +93,12 @@ export class WwnActor extends Actor {
     });
   }
 
-  isNew() {
-    const data = this.data.data;
-    if (this.data.type == "character") {
-      let ct = 0;
-      Object.values(data.scores).forEach((el) => {
-        ct += el.value;
-      });
-      return ct == 0 ? true : false;
-    } else if (this.data.type == "monster") {
-      let ct = 0;
-      Object.values(data.saves).forEach((el) => {
-        ct += el.value;
-      });
-      return ct == 0 ? true : false;
-    }
-  }
-
   /* -------------------------------------------- */
   /*  Rolls                                       */
   /* -------------------------------------------- */
 
   rollHP(options = {}) {
-    const roll = new Roll(this.data.data.hp.hd).roll({ async: false });
+    const roll = new Roll(this.system.hp.hd).roll({ async: false });
     return this.update({
       data: {
         hp: {
@@ -117,12 +114,11 @@ export class WwnActor extends Actor {
     const rollParts = ["1d20"];
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "above",
-        target: this.data.data.saves[save].value,
-        magic:
-          this.data.type === "character" ? this.data.data.scores.wis.mod : 0,
+        target: this.system.saves[save].value,
+        magic: this.type === "character" ? this.system.scores.wis.mod : 0,
       },
       details: game.i18n.format("WWN.roll.details.save", { save: label }),
     };
@@ -130,7 +126,7 @@ export class WwnActor extends Actor {
     let skip = options.event && options.event.ctrlKey;
 
     const rollMethod =
-      this.data.type == "character" ? WwnDice.RollSave : WwnDice.Roll;
+      this.type == "character" ? WwnDice.RollSave : WwnDice.Roll;
 
     // Roll and return
     return rollMethod({
@@ -140,7 +136,9 @@ export class WwnActor extends Actor {
       skipDialog: skip,
       speaker: ChatMessage.getSpeaker({ actor: this }),
       flavor: game.i18n.format("WWN.roll.save", { save: label }),
-      title: game.i18n.format("WWN.roll.save", { save: this.name + " - " + label }),
+      title: game.i18n.format("WWN.roll.save", {
+        save: this.name + " - " + label,
+      }),
     });
   }
 
@@ -148,10 +146,10 @@ export class WwnActor extends Actor {
     const rollParts = ["2d6"];
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "below",
-        target: this.data.data.details.morale,
+        target: this.system.details.morale,
       },
     };
 
@@ -171,10 +169,10 @@ export class WwnActor extends Actor {
     const rollParts = ["1d10"];
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "instinct",
-        target: this.data.data.details.instinct,
+        target: this.system.details.instinct,
       },
     };
 
@@ -195,10 +193,10 @@ export class WwnActor extends Actor {
     const rollParts = ["2d6"];
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "below",
-        target: this.data.data.retainer.loyalty,
+        target: this.system.retainer.loyalty,
       },
     };
 
@@ -218,24 +216,24 @@ export class WwnActor extends Actor {
     const rollParts = ["2d6"];
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "table",
         table: {
           2: game.i18n.format("WWN.reaction.Hostile", {
-            name: this.data.name,
+            name: this.name,
           }),
           3: game.i18n.format("WWN.reaction.Unfriendly", {
-            name: this.data.name,
+            name: this.name,
           }),
           6: game.i18n.format("WWN.reaction.Neutral", {
-            name: this.data.name,
+            name: this.name,
           }),
           9: game.i18n.format("WWN.reaction.Indifferent", {
-            name: this.data.name,
+            name: this.name,
           }),
           12: game.i18n.format("WWN.reaction.Friendly", {
-            name: this.data.name,
+            name: this.name,
           }),
         },
       },
@@ -260,10 +258,10 @@ export class WwnActor extends Actor {
     const rollParts = ["1d20"];
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "check",
-        target: this.data.data.scores[score].value,
+        target: this.system.scores[score].value,
       },
 
       details: game.i18n.format("WWN.roll.details.attribute", {
@@ -287,13 +285,17 @@ export class WwnActor extends Actor {
 
   rollHitDice(options = {}) {
     const label = game.i18n.localize(`WWN.roll.hd`);
-    const rollParts = new Array(this.data.data.details.level || 1).fill(this.data.data.hp.hd);
-    if (this.data.type == "character") {
-      rollParts.push(`${this.data.data.scores.con.mod * this.data.data.details.level}[CON]`);
+    const rollParts = new Array(this.system.details.level || 1).fill(
+      this.system.hp.hd
+    );
+    if (this.type == "character") {
+      rollParts.push(
+        `${this.system.scores.con.mod * this.system.details.level}[CON]`
+      );
     }
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "hitdice",
       },
@@ -315,14 +317,14 @@ export class WwnActor extends Actor {
     const rollParts = [];
     let label = "";
     if (options.check == "wilderness") {
-      rollParts.push(this.data.data.details.appearing.w);
+      rollParts.push(this.system.details.appearing.w);
       label = "(wilderness)";
     } else {
-      rollParts.push(this.data.data.details.appearing.d);
+      rollParts.push(this.system.details.appearing.d);
       label = "(dungeon)";
     }
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: {
           type: "appearing",
@@ -347,10 +349,10 @@ export class WwnActor extends Actor {
     const rollParts = ["2d6"];
 
     const data = {
-      actor: this.data,
+      actor: this.system,
       roll: {
         type: "skill",
-        target: this.data.data.details.skill,
+        target: this.system.details.skill,
       },
 
       details: game.i18n.format("WWN.roll.details.attribute", {
@@ -358,7 +360,7 @@ export class WwnActor extends Actor {
       }),
     };
 
-    rollParts.push(this.data.data.details.skill);
+    rollParts.push(this.system.details.skill);
     let skip = options.event && options.event.ctrlKey;
 
     // Roll and return
@@ -374,10 +376,10 @@ export class WwnActor extends Actor {
   }
 
   rollDamage(attData, options = {}) {
-    const data = this.data.data;
+    const data = this.system;
 
     const rollData = {
-      actor: this.data,
+      actor: this.system,
       item: attData.item,
       roll: {
         type: "damage",
@@ -422,32 +424,35 @@ export class WwnActor extends Actor {
     }
   }
 
-  rollAttack(attData, options = {}) { 
-    const data = this.data.data;
+  rollAttack(attData, options = {}) {
+    const data = this.system;
     const rollParts = ["1d20"];
     const dmgParts = [];
     const rollLabels = [];
     const dmgLabels = [];
-    const weaponShock = attData.item.data.shock.damage;
+    const weaponShock = attData.item.system.shock.damage;
     let statAttack, skillAttack, statValue, skillValue;
     if (data.character) {
-      statAttack = attData.item.data.score;
-      skillAttack = attData.item.data.skill;
-      skillValue = this.items.find(item => item.type === "skill" && item.name.toLowerCase() === skillAttack).data.data.ownedLevel;
-      statValue = this.data.data.scores[statAttack].mod;
+      statAttack = attData.item.system.score;
+      skillAttack = attData.item.system.skill;
+      skillValue = this.items.find(
+        (item) =>
+          item.type === "skill" && item.name.toLowerCase() === skillAttack
+      ).system.ownedLevel;
+      statValue = this.system.scores[statAttack].mod;
     }
 
     let readyState = "";
     let label = game.i18n.format("WWN.roll.attacks", {
-      name: this.data.name,
+      name: this.name,
     });
     if (!attData.item) {
       dmgParts.push("1d6");
     } else {
       if (data.character) {
-        if (attData.item.data.equipped) {
+        if (attData.item.system.equipped) {
           readyState = game.i18n.format("WWN.roll.readied");
-        } else if (attData.item.data.stowed) {
+        } else if (attData.item.system.stowed) {
           readyState = game.i18n.format("WWN.roll.stowed");
         } else {
           readyState = game.i18n.format("WWN.roll.notCarried");
@@ -455,27 +460,30 @@ export class WwnActor extends Actor {
       }
       label = game.i18n.format("WWN.roll.attacksWith", {
         name: attData.item.name,
-        readyState: readyState
+        readyState: readyState,
       });
-      dmgParts.push(attData.item.data.damage);
+      dmgParts.push(attData.item.system.damage);
     }
 
     if (data.character) {
       if (data.warrior) {
-        const levelRoundedUp = Math.ceil(this.data.data.details.level / 2);
-        attData.item.data.shockTotal = statValue + weaponShock + levelRoundedUp;
+        const levelRoundedUp = Math.ceil(this.system.details.level / 2);
+        attData.item.system.shockTotal =
+          statValue + weaponShock + levelRoundedUp;
       } else {
-        attData.item.data.shockTotal = statValue + weaponShock;
+        attData.item.system.shockTotal = statValue + weaponShock;
       }
-      if (attData.item.data.skillDamage) {
-        attData.item.data.shockTotal = attData.item.data.shockTotal + skillValue;
+      if (attData.item.system.skillDamage) {
+        attData.item.system.shockTotal =
+          attData.item.system.shockTotal + skillValue;
       }
     } else {
-      attData.item.data.shockTotal = this.data.data.damageBonus + attData.item.data.shock.damage;
+      attData.item.system.shockTotal =
+        Number(this.system.damageBonus) +
+        Number(attData.item.system.shock.damage);
     }
-
     rollParts.push(data.thac0.bba.toString());
-    rollLabels.push(`+${data.thac0.bba} (attack bonus)`)
+    rollLabels.push(`+${data.thac0.bba} (attack bonus)`);
 
     // TODO: Add range selector in dialogue if missile attack.
     /* if (options.type == "missile") {
@@ -484,21 +492,25 @@ export class WwnActor extends Actor {
       );
     } */
     if (data.character) {
-      const unskilledAttack = attData.item.data.tags.find(weapon => weapon.title === "CB" ) ? 0 : -2;
+      const unskilledAttack = attData.item.system.tags.find(
+        (weapon) => weapon.title === "CB"
+      )
+        ? 0
+        : -2;
       rollParts.push(statValue);
-      rollLabels.push(`+${statValue} (${statAttack})`)
+      rollLabels.push(`+${statValue} (${statAttack})`);
       if (skillValue == -1) {
         rollParts.push(unskilledAttack);
-        rollLabels.push(`${unskilledAttack} (unskilled penalty)`)
+        rollLabels.push(`${unskilledAttack} (unskilled penalty)`);
       } else {
         rollParts.push(skillValue);
         rollLabels.push(`+${skillValue} (${skillAttack})`);
       }
     }
 
-    if (attData.item && attData.item.data.bonus) {
-      rollParts.push(attData.item.data.bonus);
-      rollLabels.push(`+${attData.item.data.bonus} (weapon bonus)`);
+    if (attData.item && attData.item.system.bonus) {
+      rollParts.push(attData.item.system.bonus);
+      rollLabels.push(`+${attData.item.system.bonus} (weapon bonus)`);
     }
     let thac0 = data.thac0.value;
 
@@ -510,20 +522,20 @@ export class WwnActor extends Actor {
         dmgParts.push(levelRoundedUp);
         dmgLabels.push(`+${levelRoundedUp} (warrior bonus)`);
       }
-      if (attData.item.data.skillDamage) {
+      if (attData.item.system.skillDamage) {
         dmgParts.push(skillValue);
         dmgLabels.push(`+${skillValue} (${skillAttack})`);
       }
     } else {
-      dmgParts.push(this.data.data.damageBonus);
-      dmgLabels.push(`+${this.data.data.damageBonus.toString()} (damage bonus)`);
+      dmgParts.push(this.system.damageBonus);
+      dmgLabels.push(`+${this.system.damageBonus.toString()} (damage bonus)`);
     }
-    
+
     const rollTitle = `1d20 ${rollLabels.join(" ")}`;
     const dmgTitle = `${dmgParts[0]} ${dmgLabels.join(" ")}`;
 
     const rollData = {
-      actor: this.data,
+      actor: this,
       item: attData.item,
       roll: {
         type: options.type,
@@ -550,14 +562,14 @@ export class WwnActor extends Actor {
 
   async applyDamage(amount = 0, multiplier = 1) {
     amount = Math.floor(parseInt(amount) * multiplier);
-    const hp = this.data.data.hp;
+    const hp = this.system.hp;
 
     // Remaining goes to health
     const dh = Math.clamped(hp.value - amount, 0, hp.max);
 
     // Update the Actor
     return this.update({
-      "data.hp.value": dh,
+      "system.hp.value": dh,
     });
   }
 
@@ -571,144 +583,155 @@ export class WwnActor extends Actor {
     return output;
   }
 
-  async computeInit() {
+  computeInit() {
     let initValue = 0;
     if (game.settings.get("wwn", "initiative") != "group") {
-      if (this.data.type == "character") {
-        initValue = this.data.data.scores.dex.mod + this.data.data.initiative.mod;
+      if (this.type == "character") {
+        initValue = this.system.scores.dex.mod + this.system.initiative.mod;
       } else {
-        initValue = this.data.data.initiative.mod;
+        initValue = this.system.initiative.mod;
       }
     }
-    await this.data.update({ data: { initiative: { value: initValue } } });
+    this.system.initiative.value = initValue;
   }
 
-  async setXP() {
-    if (this.data.type != "character") {
+  setXP() {
+    if (this.type != "character") {
       return;
     }
-    const data = this.data.data;
+    const data = this.system;
     let xpRate = [];
     let level = data.details.level - 1;
 
     // Retrieve XP Settings
     switch (game.settings.get("wwn", "xpConfig")) {
       case "xpSlow":
-        xpRate = [
-          6,
-          15,
-          24,
-          36,
-          51,
-          69,
-          87,
-          105,
-          139
-        ];
+        xpRate = [6, 15, 24, 36, 51, 69, 87, 105, 139];
         break;
       case "xpFast":
-        xpRate = [
-          3,
-          6,
-          12,
-          18,
-          27,
-          39,
-          54,
-          72,
-          93
-        ];
+        xpRate = [3, 6, 12, 18, 27, 39, 54, 72, 93];
         break;
       case "xpCustom":
-        xpRate = game.settings.get("wwn", "xpCustomList").split(',');
+        xpRate = game.settings.get("wwn", "xpCustomList").split(",");
         break;
     }
 
     // Set character's XP to level
-    await this.data.update({ data: { details: { xp: { next: xpRate[level] } } } });
+    this.system.details.xp.next = xpRate[level];
   }
 
-  async computePrepared() {
-    if (!this.data.data.spells.enabled) {
+  computePrepared() {
+    if (!this.system.spells.enabled) {
       return;
     }
 
     // Initialize data and variables
-    const data = this.data.data;
-    const spells = this.data.items.filter((s) => s.type == "spell");
+    const data = this.system;
+    const spells = this.items.filter((s) => s.type == "spell");
     let spellsPrepared = 0;
 
     spells.forEach((s) => {
-      if (s.data.data.prepared) {
+      if (s.system.prepared) {
         spellsPrepared++;
       }
     });
-    await this.data.update({ data: { spells: { prepared: { value: spellsPrepared } } } });
+    this.system.spells.prepared.value = spellsPrepared;
   }
 
-  async computeEncumbrance() {
-    if (this.data.type === "monster") {
-      const data = this.data.data;
-      await this.data.update({ data: { movement: { exploration: data.movement.base * 3 } } });
-      return;
-    }
-    const data = this.data.data;
+  computeEncumbrance() {
+    if (this.type === "monster") return;
+    const data = this.system;
 
     // Compute encumbrance
     let totalReadied = 0;
     let totalStowed = 0;
     let maxReadied = Math.floor(data.scores.str.value / 2);
     let maxStowed = data.scores.str.value;
-    const weapons = this.data.items.filter((w) => w.type == "weapon");
-    const armors = this.data.items.filter((a) => a.type == "armor");
-    const items = this.data.items.filter((i) => i.type == "item");
+    const weapons = this.items.filter((w) => w.type == "weapon");
+    const armors = this.items.filter((a) => a.type == "armor");
+    const items = this.items.filter((i) => i.type == "item");
 
     weapons.forEach((w) => {
-      if (w.data.data.equipped) {
-        totalReadied += w.data.data.weight * w.data.data.quantity;
-      } else if (w.data.data.stowed) {
-        totalStowed += w.data.data.weight * w.data.data.quantity;
+      if (
+        (w.system.weightless === "whenReadied" && w.system.equipped) ||
+        (w.system.weightless === "whenStowed" && w.system.stowed)
+      )
+        return;
+      if (w.system.equipped) {
+        totalReadied += Math.ceil(w.system.weight * w.system.quantity);
+      } else if (w.system.stowed) {
+        totalStowed += Math.ceil(w.system.weight * w.system.quantity);
       }
     });
     armors.forEach((a) => {
-      if (a.data.data.equipped) {
-        totalReadied += a.data.data.weight;
-      } else if (a.data.data.stowed) {
-        totalStowed += a.data.data.weight;
+      if (
+        (a.system.weightless === "whenReadied" && a.system.equipped) ||
+        (a.system.weightless === "whenStowed" && a.system.stowed)
+      )
+        return;
+      if (a.system.equipped) {
+        totalReadied += a.system.weight;
+      } else if (a.system.stowed) {
+        totalStowed += a.system.weight;
       }
     });
     items.forEach((i) => {
-      if (i.data.data.equipped) {
-        totalReadied += i.data.data.weight * i.data.data.quantity;
-      } else if (i.data.data.stowed) {
-        totalStowed += i.data.data.weight * i.data.data.quantity;
+      if (
+        (i.system.weightless === "whenReadied" && i.system.equipped) ||
+        (i.system.weightless === "whenStowed" && i.system.stowed)
+      )
+        return;
+      let itemWeight;
+      if (i.system.charges.value || i.system.charges.max) {
+        if (
+          i.system.charges.value <= i.system.charges.max ||
+          !i.system.charges.value
+        ) {
+          itemWeight = i.system.weight;
+        } else if (!i.system.charges.max) {
+          itemWeight = i.system.charges.value * i.system.weight;
+        } else {
+          itemWeight = i.system.charges.value / i.system.charges.max;
+        }
+      } else {
+        itemWeight = i.system.weight * i.system.quantity;
+      }
+      if (i.system.equipped) {
+        totalReadied += Math.ceil(itemWeight);
+      } else if (i.system.stowed) {
+        totalStowed += Math.ceil(itemWeight);
       }
     });
 
     if (game.settings.get("wwn", "currencyTypes") == "currencybx") {
-      let coinWeight = (data.currency.cp + data.currency.sp + data.currency.ep + data.currency.gp + data.currency.pp) / 100;
+      const coinWeight =
+        (data.currency.cp +
+          data.currency.sp +
+          data.currency.ep +
+          data.currency.gp +
+          data.currency.pp) /
+        100;
       totalStowed += coinWeight;
     } else {
-      let coinWeight = (data.currency.cp + data.currency.sp + data.currency.gp) / 100;
+      const coinWeight =
+        (data.currency.cp + data.currency.sp + data.currency.gp) / 100;
       totalStowed += coinWeight;
     }
-    await this.data.update({
-      data: {
-        encumbrance: {
-          readied: { max: maxReadied, value: totalReadied.toFixed(2) },
-          stowed: { max: maxStowed, value: totalStowed.toFixed(2) }
-        }
-      }
-    })
+
+    this.system.encumbrance = {
+      readied: { max: maxReadied, value: totalReadied.toFixed(2) },
+      stowed: { max: maxStowed, value: totalStowed.toFixed(2) },
+    };
   }
 
-  async _calculateMovement() {
-    if (this.data.type != "character") return;
-    const data = this.data.data;
+  _calculateMovement() {
+    if (this.type != "character") return;
+
+    const data = this.system;
+
     if (data.config.movementAuto) {
-      if (isNaN(data.movement.bonus)) {
-        await this.data.update({ data: { movement: { bonus: 0 } } });
-      }
+      this.system.movement.bonus = 0;
+
       let newBase = data.movement.base;
       const readiedValue = data.encumbrance.readied.value;
       const readiedMax = data.encumbrance.readied.max;
@@ -717,7 +740,9 @@ export class WwnActor extends Actor {
       const bonus = data.movement.bonus;
 
       let systemBase = [];
-      game.settings.get("wwn", "movementRate") == "movebx" ? systemBase = [40, 30, 20] : systemBase = [30, 20, 15];
+      game.settings.get("wwn", "movementRate") == "movebx"
+        ? (systemBase = [40, 30, 20])
+        : (systemBase = [30, 20, 15]);
 
       if (readiedValue <= readiedMax && stowedValue <= stowedMax) {
         newBase = systemBase[0] + bonus;
@@ -725,7 +750,10 @@ export class WwnActor extends Actor {
         newBase = systemBase[1] + bonus;
       } else if (readiedValue <= readiedMax && stowedValue <= stowedMax + 4) {
         newBase = systemBase[1] + bonus;
-      } else if (readiedValue <= readiedMax + 2 && stowedValue <= stowedMax + 4) {
+      } else if (
+        readiedValue <= readiedMax + 2 &&
+        stowedValue <= stowedMax + 4
+      ) {
         newBase = systemBase[2] + bonus;
       } else if (readiedValue <= readiedMax + 4 && stowedValue <= stowedMax) {
         newBase = systemBase[2] + bonus;
@@ -734,28 +762,63 @@ export class WwnActor extends Actor {
       } else {
         newBase = 0;
       }
-      await this.data.update({ data: { movement: { base: newBase, exploration: newBase * 3, overland: newBase / 5 } } });
+      this.system.movement = {
+        base: newBase,
+        exploration: newBase * 3,
+        overland: newBase / 5,
+      };
     }
+  }
+
+  // Calculate Resources
+  computeResources() {
+    if (this.type != "character") return;
+    let totalOil = 0;
+    let totalTorches = 0;
+    let totalRations = 0;
+
+    // Collect resource arrays
+    const oilArray = this.items.filter(
+      (i) => i.name === "Oil, one pint" || i.name === "Oil"
+    );
+    const torchArray = this.items.filter((i) => i.name === "Torch");
+    const rationsArray = this.items.filter(
+      (i) => i.name === "Rations, one week" || i.name === "Rations"
+    );
+
+    // Calculate resource totals
+    oilArray.forEach((i) => (totalOil += i.system.charges.value));
+    torchArray.forEach((i) => (totalTorches += i.system.charges.value));
+    rationsArray.forEach((i) => (totalRations += i.system.charges.value));
+
+    // Update resources
+    this.system.details.resources = {
+      oil: totalOil,
+      torches: totalTorches,
+      rations: totalRations,
+    };
   }
 
   // Compute Total Wealth
-  async computeTotalSP() {
-    const data = this.data.data;
-    if (this.data.type != "character") {
-      return;
-    } else {
-      let newTotal = data.currency.cp * 0.1 + data.currency.sp + data.currency.gp * 10 + data.currency.pp * 100 + data.currency.ep * 5 + data.currency.bank + data.treasure;
-      await this.data.update({ data: { currency: { total: newTotal } } });
-    }
-
+  computeTotalSP() {
+    const data = this.system;
+    if (this.type != "character") return;
+    let newTotal =
+      data.currency.cp * 0.1 +
+      data.currency.sp +
+      data.currency.gp * 10 +
+      data.currency.pp * 100 +
+      data.currency.ep * 5 +
+      data.currency.bank +
+      data.treasure;
+    this.system.currency.total = newTotal;
   }
 
   // Compute Effort
-  async computeEffort() {
-    if (this.data.type === "faction" || this.data.type === "location") {
-      return;
-    }
-    const data = this.data.data;
+  computeEffort() {
+    if (this.type === "faction") return;
+
+    const data = this.system;
     if (data.spells.enabled != true) {
       return;
     }
@@ -767,55 +830,49 @@ export class WwnActor extends Actor {
     let effortType2 = data.classes.effort2.name;
     let effortType3 = data.classes.effort3.name;
     let effortType4 = data.classes.effort4.name;
-    const arts = this.data.items.filter((a) => a.type == "art");
+    const arts = this.items.filter((a) => a.type == "art");
     arts.forEach((a) => {
-      if (effortType1 == a.data.data.source) {
-        effortOne += a.data.data.effort;
+      if (effortType1 == a.system.source) {
+        effortOne += a.system.effort;
       }
-      if (effortType2 == a.data.data.source) {
-        effortTwo += a.data.data.effort;
+      if (effortType2 == a.system.source) {
+        effortTwo += a.system.effort;
       }
-      if (effortType3 == a.data.data.source) {
-        effortThree += a.data.data.effort;
+      if (effortType3 == a.system.source) {
+        effortThree += a.system.effort;
       }
-      if (effortType4 == a.data.data.source) {
-        effortFour += a.data.data.effort;
-      }
-    });
-    await this.data.update({
-      data: {
-        classes: {
-          effort1: { value: effortOne },
-          effort2: { value: effortTwo },
-          effort3: { value: effortThree },
-          effort4: { value: effortFour }
-        }
+      if (effortType4 == a.system.source) {
+        effortFour += a.system.effort;
       }
     });
+    this.system.classes.effort1.value = effortOne;
+    this.system.classes.effort2.value = effortTwo;
+    this.system.classes.effort3.value = effortThree;
+    this.system.classes.effort4.value = effortFour;
   }
 
-  async computeTreasure() {
-    if (this.data.type != "character") {
+  computeTreasure() {
+    if (this.type != "character") {
       return;
     }
-    const data = this.data.data;
+    const data = this.system;
     // Compute treasure
     let total = 0;
-    const treasures = this.data.items.filter(
-      (i) => i.type == "item" && i.data.data.treasure
+    const treasures = this.items.filter(
+      (i) => i.type == "item" && i.system.treasure
     );
     treasures.forEach((item) => {
-      total += item.data.data.quantity * item.data.data.price;
+      total += item.system.quantity * item.system.price;
     });
-    await this.data.update({ data: { treasure: total } });
+    this.system.treasure = total;
   }
 
-  async computeAC() {
-    if (this.data.type != "character") {
+  computeAC() {
+    if (this.type != "character") {
       return;
     }
 
-    const data = this.data.data;
+    const data = this.system;
 
     // Compute AC
     let baseAac = 10;
@@ -825,45 +882,52 @@ export class WwnActor extends Actor {
     let exertPenalty = 0;
     let sneakPenalty = 0;
 
-    const armors = this.data.items.filter((i) => i.type == "armor");
+    const armors = this.items.filter((i) => i.type == "armor");
     armors.forEach((a) => {
-      if (!a.data.data.equipped) { return; };
-      if (a.data.data.type != "shield") {
-        baseAac = a.data.data.aac.value + a.data.data.aac.mod;
+      if (!a.system.equipped) {
+        return;
+      }
+      if (a.system.type != "shield") {
+        baseAac = a.system.aac.value + a.system.aac.mod;
         // Check if armor is medium or heavy and apply appropriate Sneak/Exert penalty
-        if (a.data.data.type === "medium" && a.data.data.weight > sneakPenalty) {
-          sneakPenalty = a.data.data.weight;
+        if (a.system.type === "medium" && a.system.weight > sneakPenalty) {
+          sneakPenalty = a.system.weight;
         }
-        if (a.data.data.type === "heavy" && a.data.data.weight > sneakPenalty) {
-          sneakPenalty = a.data.data.weight;
+        if (a.system.type === "heavy" && a.system.weight > sneakPenalty) {
+          sneakPenalty = a.system.weight;
         }
-        if (a.data.data.type === "heavy" && a.data.data.weight > exertPenalty) {
-          exertPenalty = a.data.data.weight;
+        if (a.system.type === "heavy" && a.system.weight > exertPenalty) {
+          exertPenalty = a.system.weight;
         }
-      } else if (a.data.data.type == "shield") {
-        AacShieldMod = 1 + a.data.data.aac.mod;
-        AacShieldNaked = a.data.data.aac.value + a.data.data.aac.mod;
+      } else if (a.system.type == "shield") {
+        AacShieldMod = 1 + a.system.aac.mod;
+        AacShieldNaked = a.system.aac.value + a.system.aac.mod;
       }
     });
     if (AacShieldMod > 0) {
       let shieldOnly = AacShieldNaked + data.scores.dex.mod + data.aac.mod;
-      let shieldBonus = baseAac + data.scores.dex.mod + data.aac.mod + AacShieldMod;
+      let shieldBonus =
+        baseAac + data.scores.dex.mod + data.aac.mod + AacShieldMod;
       if (shieldOnly > shieldBonus) {
-        await this.data.update({ data: { aac: { value: shieldOnly, shield: 0, naked: naked } } });
+        this.system.aac = { value: shieldOnly, shield: 0, naked };
       } else {
-        await this.data.update({ data: { aac: { value: shieldBonus, shield: AacShieldMod, naked: naked } } });
+        this.system.aac = { value: shieldBonus, shield: AacShieldMod, naked };
       }
     } else {
-      await this.data.update({ data: { aac: { value: baseAac + data.scores.dex.mod + data.aac.mod, naked: naked, shield: 0 } } });
+      this.system.aac = {
+        value: baseAac + data.scores.dex.mod + data.aac.mod,
+        naked,
+        shield: 0,
+      };
     }
-    await this.data.update({ data: { skills: { sneakPenalty: sneakPenalty , exertPenalty: exertPenalty }}});
+    this.system.skills.sneakPenalty = sneakPenalty;
+    this.system.skills.exertPenalty = exertPenalty;
   }
 
-  async computeModifiers() {
-    if (this.data.type != "character") {
-      return;
-    }
-    const data = this.data.data;
+  computeModifiers() {
+    if (this.type != "character") return;
+
+    const data = this.system;
     const scores = data.scores;
 
     const standard = {
@@ -874,10 +938,13 @@ export class WwnActor extends Actor {
       14: 1,
       18: 2,
     };
-    await Promise.all(Object.keys(scores).map(async (score) => {
-      let newMod = this.data.data.scores[score].tweak + WwnActor._valueFromTable(standard, scores[score].value);
-      await this.data.update({ data: { scores: { [score]: { mod: newMod } } } });
-    }));
+
+    Object.keys(scores).map((score) => {
+      let newMod =
+        this.system.scores[score].tweak +
+        WwnActor._valueFromTable(standard, scores[score].value);
+      this.system.scores[score].mod = newMod;
+    });
 
     const capped = {
       0: -2,
@@ -891,8 +958,8 @@ export class WwnActor extends Actor {
     };
   }
 
-  async computeSaves() {
-    const data = this.data.data;
+  computeSaves() {
+    const data = this.system;
     const saves = data.saves;
     Object.keys(saves).forEach((s) => {
       if (!saves[s].mod) {
@@ -900,35 +967,42 @@ export class WwnActor extends Actor {
       }
     });
 
-    if (this.data.type != "character") {
-      const monsterHD = data.hp.hd.toLowerCase().split('d');
-      await Promise.all(Object.keys(saves).map((s) => {
-        this.data.update({ data: { saves: { [s]: { value: Math.max(15 - Math.floor(monsterHD[0] / 2), 2) + saves[s].mod } } } })
-      }))
+    if (this.type != "character") {
+      const monsterHD = data.hp.hd.toLowerCase().split("d");
+      Object.keys(saves).forEach(
+        (s) =>
+        (saves[s].value =
+          Math.max(15 - Math.floor(monsterHD[0] / 2), 2) + saves[s].mod)
+      );
     } else {
       let charLevel = data.details.level;
-      let evasionVal = 16 - Math.max(data.scores.int.mod, data.scores.dex.mod) - charLevel + data.saves.evasion.mod;
-      let physicalVal = 16 - Math.max(data.scores.con.mod, data.scores.str.mod) - charLevel + data.saves.physical.mod;
-      let mentalVal = 16 - Math.max(data.scores.wis.mod, data.scores.cha.mod) - charLevel + data.saves.mental.mod;
+      let evasionVal =
+        16 -
+        Math.max(data.scores.int.mod, data.scores.dex.mod) -
+        charLevel +
+        data.saves.evasion.mod;
+      let physicalVal =
+        16 -
+        Math.max(data.scores.con.mod, data.scores.str.mod) -
+        charLevel +
+        data.saves.physical.mod;
+      let mentalVal =
+        16 -
+        Math.max(data.scores.wis.mod, data.scores.cha.mod) -
+        charLevel +
+        data.saves.mental.mod;
       let luckVal = 16 - charLevel + data.saves.luck.mod;
-
-      await this.data.update({
-        data: {
-          saves: {
-            evasion: { value: evasionVal },
-            physical: { value: physicalVal },
-            mental: { value: mentalVal },
-            luck: { value: luckVal }
-          }
-        }
-      })
+      this.system.saves.evasion.value = evasionVal;
+      this.system.saves.physical.value = physicalVal;
+      this.system.saves.mental.value = mentalVal;
+      this.system.saves.luck.value = luckVal;
     }
   }
 
   // Creates a list of skills based on the following list. Was used to generate
   // the initial skills list to populate a compendium
-  async createSkillsManually(data,options,user) {
-    const actorData = this.data;
+  async createSkillsManually(data, options, user) {
+    const actorData = this.system;
     const skillList = [
       "administer",
       "connect",
@@ -962,7 +1036,7 @@ export class WwnActor extends Actor {
     const skills = skillList.map((el) => {
       const skillKey = `WWN.skills.${el}`;
       const skillDesc = `WWN.skills.desc.${el}`;
-      const imagePath = `/systems/wwn/assets/skills/${el}.png`
+      const imagePath = `/systems/wwn/assets/skills/${el}.png`;
       return {
         type: "skill",
         name: game.i18n.localize(skillKey),
@@ -986,12 +1060,14 @@ export class WwnActor extends Actor {
   async _onCreate(data, options, user) {
     await super._onCreate(data, options, user);
     // Add primary skills from compendium
-    if (data.type === "character") {
+    if (data.type === "character" && game.userId == user) {
       // If there are no skills, add ones from compendium
-      if (!data.items.filter((i)=>i.type=="skill").length) {
+      if (!data.items.filter((i) => i.type == "skill").length) {
         let skillPack = game.packs.get("wwn.skills");
         let toAdd = await skillPack.getDocuments();
-        let primarySkills = toAdd.filter((i) => i.data.data.secondary == false).map(item => item.toObject());
+        let primarySkills = toAdd
+          .filter((i) => i.system.secondary == false)
+          .map((item) => item.toObject());
         await this.createEmbeddedDocuments("Item", primarySkills);
       }
     }

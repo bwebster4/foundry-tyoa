@@ -1,6 +1,6 @@
 {
   "Actor": {
-    "types": ["character", "monster"],
+    "types": ["character", "monster", "faction"],
     "templates": {
       "common": {
         "retainer": {
@@ -126,6 +126,11 @@
           "value": 0,
           "spent": 0,
           "total": 0
+        },
+        "resources": {
+          "rations": 0,
+          "torches": 0,
+          "oil": 0
         }
       },
       "character": true,
@@ -225,24 +230,22 @@
       }
     },
     "faction": {
-      "templates": [],
-      "hp": {
-        "value": 3,
-        "max": 3
+      "description": "",
+      "health": {
+        "value": 7,
+        "max": 7
       },
-      "goal": {
-        "active": "",
-        "progress": ""
-      },
+      "forceRating": 1,
+      "cunningRating": 1,
+      "wealthRating": 1,
+      "facCreds": 0,
       "xp": 0,
+      "homeworld": "",
+      "active": true,
+      "factionGoal": "",
+      "factionGoalDesc": "",
       "tags": [],
-      "attributes": {
-        "cunning": 1,
-        "force": 1,
-        "wealth": 1,
-        "magic": "None",
-        "treasure": 0
-      },
+      "log": [],
       "initiative": {
         "value": 0
       }
@@ -256,15 +259,14 @@
       "treasure": false,
       "price": 0,
       "weight": 0,
-      "hasCharges": false,
+      "weightless": "",
       "charges": {
         "value": 0,
         "max": 0
       },
       "roll": "",
       "equipped": false,
-      "stowed": false,
-      "version": 4
+      "stowed": false
     },
   "weapon": {
     "range": {
@@ -283,8 +285,8 @@
       "ac": "15"
     },
     "shockTotal": 0,
-    "skill": "",
-    "score": "",
+    "skill": "stab",
+    "score": "str",
     "tags": [],
     "slow": false,
     "missile": false,
@@ -295,7 +297,11 @@
       "value": 0,
       "max": 0
     },
-    "quantity": 1
+    "quantity": 1,
+    "charges": {
+      "value": 0,
+      "max": 0
+    }
   },
   "armor": {
     "description": "",
@@ -352,19 +358,30 @@
     "save": ""
   },
   "asset": {
-    "hp": {
-      "value": 3,
-      "max": 3
+    "desc": "",
+    "health": {
+      "value": 1,
+      "max": 1
     },
-    "cost": 2,
-    "attack": "1d6",
-    "counter": "1d6",
-    "BOI": false,
+    "cost": 1,
+    "rating": 1,
+    "baseOfInfluence": false,
+    "attackTarget": "",
+    "attackSource": "",
+    "attackDamage": "",
+    "counter": "",
+    "note": "",
+    "turnRoll": "",
+    "assetType": "cunning",
+    "location": "",
+    "maintenance": 0,
+    "income": 0,
+    "unusable": false,
+    "stealthed": false,
     "magic": "none",
-    "stealth": false,
     "subtle": false,
     "special": false,
-    "type": "cunning"
+    "locationRoll": ""
   }
 }
 }

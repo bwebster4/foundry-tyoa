@@ -2,7 +2,7 @@
 import { WwnItemSheet } from "./module/item/item-sheet.js";
 import { WwnActorSheetCharacter } from "./module/actor/character-sheet.js";
 import { WwnActorSheetMonster } from "./module/actor/monster-sheet.js";
-// import { WwnActorSheetFaction } from "./module/actor/faction-sheet.js";
+import { WwnActorSheetFaction } from "./module/actor/faction-sheet.js";
 import { preloadHandlebarsTemplates } from "./module/preloadTemplates.js";
 import { WwnActor } from "./module/actor/entity.js";
 import { WwnItem } from "./module/item/entity.js";
@@ -15,7 +15,8 @@ import * as macros from "./module/macros.js";
 import * as party from "./module/party.js";
 import { WwnCombat } from "./module/combat.js";
 import * as migrations from "./module/migration.js";
-
+import { WwnItemProxy } from "./module/item/item-proxy.js";
+import { WwnActorProxy } from "./module/actor/actor-proxy.js";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -43,8 +44,8 @@ Hooks.once("init", async function () {
   // Register custom system settings
   registerSettings();
 
-  CONFIG.Actor.documentClass = WwnActor;
-  CONFIG.Item.documentClass = WwnItem;
+  CONFIG.Actor.documentClass = WwnActorProxy;
+  CONFIG.Item.documentClass = WwnItemProxy;
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
@@ -58,15 +59,11 @@ Hooks.once("init", async function () {
     makeDefault: true,
     label: "WWN.SheetClassMonster"
   });
-  
-  // Remove Faction sheet for 0.9.3 release
-  /* 
   Actors.registerSheet("wwn", WwnActorSheetFaction, {
     types: ["faction"],
     makeDefault: true,
     label: "WWN.SheetClassFaction"
   });
-  */
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("wwn", WwnItemSheet, {
     makeDefault: true,
@@ -81,7 +78,7 @@ Hooks.once("init", async function () {
  */
 Hooks.once("setup", function () {
   // Localize CONFIG objects once up-front
-  const toLocalize = ["saves", "scores", "armor", "colors", "tags", "skills", "attackSkills", "encumbLocation", "assetTypes", "assetMagic"];
+  const toLocalize = ["saves", "scores", "armor", "weightless", "colors", "tags", "skills", "attackSkills", "encumbLocation", "assetTypes", "assetMagic"];
   for (let o of toLocalize) {
     CONFIG.WWN[o] = Object.entries(CONFIG.WWN[o]).reduce((obj, e) => {
       obj[e[0]] = game.i18n.localize(e[1]);
@@ -100,7 +97,7 @@ Hooks.once("ready", async () => {
   const currentVersion = game.settings.get("wwn", "systemMigrationVersion");
   const NEEDS_MIGRATION_VERSION = "1.0.0";
   const totalDocuments = game.actors.size + game.scenes.size + game.items.size;
-  if ( !currentVersion && totalDocuments === 0 ) return game.settings.set("wwn", "systemMigrationVersion", game.system.data.version);
+  if ( !currentVersion && totalDocuments === 0 ) return game.settings.set("wwn", "systemMigrationVersion", game.system.version);
   const needsMigration = !currentVersion || isNewerVersion(NEEDS_MIGRATION_VERSION, currentVersion);
 
   if (needsMigration) {

@@ -39,7 +39,7 @@ export class WwnActorSheetMonster extends WwnActorSheet {
  _prepareItems(data) {
   // Partition items by category
   data.attackPatterns = [];
-  let [weapons, armors, items, arts, spells, abilities] = this.actor.data.items.reduce(
+  let [weapons, armors, items, arts, spells, abilities] = this.actor.items.reduce(
     (arr, item) => {
       // Grab attack groups
       if (["weapon"].includes(item.type)) {
@@ -61,17 +61,17 @@ export class WwnActorSheetMonster extends WwnActorSheet {
   var sortedSpells = {};
   var slots = {};
   for (var i = 0; i < spells.length; i++) {
-    let lvl = spells[i].data.data.lvl;
+    let lvl = spells[i].system.lvl;
     if (!sortedSpells[lvl]) sortedSpells[lvl] = [];
     if (!slots[lvl]) slots[lvl] = 0;
-    slots[lvl] += spells[i].data.data.memorized;
+    slots[lvl] += spells[i].system.memorized;
     sortedSpells[lvl].push(spells[i]);
   }
 
   // Sort each level
   Object.keys(sortedSpells).forEach(level => {
     let list = insertionSort(sortedSpells[level], "name");
-    list = insertionSort(list, "data.data.class");
+    list = insertionSort(list, "system.class");
     sortedSpells[level] = list;
   });
 
@@ -86,7 +86,7 @@ export class WwnActorSheetMonster extends WwnActorSheet {
 
   // Sort arts by name and then by source
   arts = insertionSort(arts, "name");
-  arts = insertionSort(arts, "data.data.source");
+  arts = insertionSort(arts, "system.source");
 
   // Assign and return
   data.owned = {
@@ -107,23 +107,29 @@ export class WwnActorSheetMonster extends WwnActorSheet {
    * Prepare data for rendering the Actor sheet
    * The prepared data object contains both the actor data as well as additional sheet options
    */
-  getData() {
+  async getData() {
     const data = super.getData();
     // Prepare owned items
     this._prepareItems(data);
 
     // Settings
     data.config.morale = game.settings.get("wwn", "morale");
-    if (!data.data.details.hasOwnProperty('instinctTable')) {
-      data.data.details.instinctTable = {
+    if (!data.system.details.hasOwnProperty('instinctTable')) {
+      data.system.details.instinctTable = {
         "table": "",
         "link": ""
       };
-      data.data.details.instinctTable.link = TextEditor.enrichHTML(data.data.details.instinctTable.table);
+      data.system.details.instinctTable.link = await TextEditor.enrichHTML(data.system.details.instinctTable.table, { async: true });
     } else {
-      data.data.details.instinctTable.link = TextEditor.enrichHTML(data.data.details.instinctTable.table);
+      data.system.details.instinctTable.link = await TextEditor.enrichHTML(data.system.details.instinctTable.table, { async: true });
     }
     data.isNew = this.actor.isNew();
+
+    data.enrichedBiography = await TextEditor.enrichHTML(
+      this.object.system.details.biography,
+      { async: true }
+    );
+    
     return data;
   }
 
@@ -137,15 +143,8 @@ export class WwnActorSheetMonster extends WwnActorSheet {
     } catch (err) {
       return false;
     }
-
-    let link = "";
-    if (data.pack) {
-      let tableData = game.packs.get(data.pack).index.filter(el => el._id === data.id);
-      link = `@Compendium[${data.pack}.${data.id}]{${tableData[0].name}}`;
-    } else {
-      link = `@RollTable[${data.id}]`;
-    }
-    this.actor.update({ "data.details.instinctTable.table": link });
+    let link = `@UUID[${data.uuid}]`;
+    this.actor.update({ "system.details.instinctTable.table": link });
   }
 
   /* -------------------------------------------- */
@@ -183,13 +182,13 @@ export class WwnActorSheetMonster extends WwnActorSheet {
   }
 
   async _resetCounters(event) {
-    const weapons = this.actor.data.items.filter(i => i.type === 'weapon');
+    const weapons = this.actor.items.filter(i => i.type === 'weapon');
     for (let wp of weapons) {
       const item = this.actor.items.get(wp.id);
       await item.update({
-        data: {
+        system: {
           counter: {
-            value: parseInt(wp.data.data.counter.max),
+            value: parseInt(wp.system.counter.max),
           },
         },
       });
@@ -202,11 +201,11 @@ export class WwnActorSheetMonster extends WwnActorSheet {
     const item = this.actor.items.get(itemId);
     if (event.target.dataset.field == "value") {
       return item.update({
-        "data.counter.value": parseInt(event.target.value),
+        "system.counter.value": parseInt(event.target.value),
       });
     } else if (event.target.dataset.field == "max") {
       return item.update({
-        "data.counter.max": parseInt(event.target.value),
+        "system.counter.max": parseInt(event.target.value),
       });
     }
   }
@@ -244,8 +243,8 @@ export class WwnActorSheetMonster extends WwnActorSheet {
       const li = $(ev.currentTarget).parents(".item");
       const item = this.actor.items.get(li.data("itemId"));
       await item.update({
-        data: {
-          prepared: !item.data.data.prepared,
+        system: {
+          prepared: !item.system.prepared,
         },
       });
     });
@@ -267,35 +266,6 @@ export class WwnActorSheetMonster extends WwnActorSheet {
       li.slideUp(200, () => this.render(false));
     });
 
-    html.find(".item-create").click((event) => {
-      event.preventDefault();
-      const header = event.currentTarget;
-      const type = header.dataset.type;
-
-      // item creation helper func
-      let createItem = function (type, name = `New ${type.capitalize()}`) {
-        const itemData = {
-          name: name ? name : `New ${type.capitalize()}`,
-          type: type,
-          data: duplicate(header.dataset),
-        };
-        delete itemData.data["type"];
-        return itemData;
-      };
-
-      // Getting back to main logic
-      if (type == "choice") {
-        const choices = header.dataset.choices.split(",");
-        this._chooseItemType(choices).then((dialogInput) => {
-          const itemData = createItem(dialogInput.type, dialogInput.name);
-          this.actor.createEmbeddedDocuments("Item", [itemData], {});
-        });
-        return;
-      }
-      const itemData = createItem(type);
-      return this.actor.createEmbeddedDocuments("Item", [itemData], {});
-    });
-
     html.find(".item-reset").click((ev) => {
       this._resetCounters(ev);
     });
@@ -313,7 +283,7 @@ export class WwnActorSheetMonster extends WwnActorSheet {
     html.find(".item-pattern").click(ev => {
       const li = $(ev.currentTarget).parents(".item");
       const item = this.actor.items.get(li.data("itemId"));
-      let currentColor = item.data.data.pattern;
+      let currentColor = item.system.pattern;
       let colors = Object.keys(CONFIG.WWN.colors);
       let index = colors.indexOf(currentColor);
       if (index + 1 == colors.length) {
@@ -322,7 +292,7 @@ export class WwnActorSheetMonster extends WwnActorSheet {
         index++;
       }
       item.update({
-        "data.pattern": colors[index]
+        "system.pattern": colors[index]
       })
     });
   }
