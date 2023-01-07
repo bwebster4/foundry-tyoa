@@ -8,23 +8,23 @@
         </h1>
         <div class="details">
           <div class="form-group">
-            <label title="{{localize 'WWN.items.Price'}}"><i class="fas
+            <label title="{{localize 'TYOA.items.Price'}}"><i class="fas
                 fa-circle"></i></label>
             <div class="form-fields">
               <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
             </div>
           </div>
           <div class="form-group">
-            <label title="{{localize 'WWN.items.Weight'}}"><i class="fas fa-weight-hanging"></i></label>
+            <label title="{{localize 'TYOA.items.Weight'}}"><i class="fas fa-weight-hanging"></i></label>
             <div class="form-fields">
               <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
             </div>
           </div>
           <div class="form-group">
-            <label title="{{localize 'WWN.items.Quantity'}}"><i class="fas fa-hashtag"></i></label>
+            <label title="{{localize 'TYOA.items.Quantity'}}"><i class="fas fa-hashtag"></i></label>
             <div class="form-fields">
               {{#if (evalOr system.charges.value system.charges.max)}}
-              <input type="number" name="system.quantity" value=1 data-dtype="Number" title="{{localize 'WWN.items.ChargeQuantity'}}" disabled />
+              <input type="number" name="system.quantity" value=1 data-dtype="Number" title="{{localize 'TYOA.items.ChargeQuantity'}}" disabled />
               {{else}}
               <input type="number" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
               {{/if}}
@@ -52,18 +52,18 @@
         <div class="stats">
           <div class="form-group">
             <div class="form-fields">
-              <input type="text" data-action="add-tag" title="{{localize 'WWN.items.typeTrait'}}"
-                placeholder="{{localize 'WWN.items.enterTrait'}}" />
+              <input type="text" data-action="add-tag" title="{{localize 'TYOA.items.typeTrait'}}"
+                placeholder="{{localize 'TYOA.items.enterTrait'}}" />
             </div>
             <div class="form-fields attack-type">
-              <a title="{{localize 'WWN.items.Melee'}}" class="melee-toggle {{#if
+              <a title="{{localize 'TYOA.items.Melee'}}" class="melee-toggle {{#if
               system.melee}}active{{/if}}"><i class="fas fa-fist-raised"></i></a>
-              <a title="{{localize 'WWN.items.Missile'}}" class="missile-toggle
+              <a title="{{localize 'TYOA.items.Missile'}}" class="missile-toggle
               {{#if system.missile}}active{{/if}}"><i class="fas fa-bullseye"></i></a>
             </div>
           </div>
           <div class="form-group">
-            <label title={{localize 'WWN.attribute' }}>{{localize 'WWN.attribute'}}</label>
+            <label title={{localize 'TYOA.attribute' }}>{{localize 'TYOA.attribute'}}</label>
             <div class="form-fields">
               <select name="system.score">
                 {{#select system.score}}
@@ -75,7 +75,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label title={{localize 'WWN.skill' }}>{{localize 'WWN.skill'}}</label>
+            <label title={{localize 'TYOA.skill' }}>{{localize 'TYOA.skill'}}</label>
             <div class="form-fields">
               <select name="system.skill">
                 {{#select system.skill}}
@@ -87,7 +87,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label title={{localize 'WWN.spells.Save' }}>{{localize 'WWN.spells.Save'}}</label>
+            <label title={{localize 'TYOA.spells.Save' }}>{{localize 'TYOA.spells.Save'}}</label>
             <div class="form-fields">
               <select name="system.save">
                 {{#select system.save}}
@@ -100,14 +100,14 @@
             </div>
           </div>
           <div class="form-group">
-            <label>{{localize 'WWN.items.AtkBonus'}}</label>
+            <label>{{localize 'TYOA.items.AtkBonus'}}</label>
             <div class="form-fields">
               <input type="number" name="system.bonus" value="{{system.bonus}}" data-dtype="Number" />
             </div>
           </div>
           {{#if system.missile}}
           <div class="form-group">
-            <label>{{localize 'WWN.items.Range'}}</label>
+            <label>{{localize 'TYOA.items.Range'}}</label>
             <div class="form-fields">
               <input type="number" name="system.range.short" value="{{system.range.short}}" data-dtype="Number" />
               <input type="number" name="system.range.long" value="{{system.range.long}}" data-dtype="Number" />
@@ -117,39 +117,39 @@
         </div>
         <div class="stats">
           <div class="form-group">
-            <label>{{localize 'WWN.items.Damage'}}</label>
+            <label>{{localize 'TYOA.items.Damage'}}</label>
             <div class="form-fields">
               <input type="text" name="system.damage" value="{{system.damage}}" data-dtype="String" />
             </div>
           </div>
           <div class="form-group">
-            <label>{{localize 'WWN.items.Shock'}}</label>
+            <label>{{localize 'TYOA.items.Shock'}}</label>
             <div class="form-fields">
               <input type="number" name="system.shock.damage" value="{{system.shock.damage}}" data-dtype="Number"
-                placeholder="{{localize 'WWN.items.Damage'}}" title="{{localize 'WWN.items.ShockDamage'}}" />
+                placeholder="{{localize 'TYOA.items.Damage'}}" title="{{localize 'TYOA.items.ShockDamage'}}" />
               /
               <input type="number" name="system.shock.ac" value="{{system.shock.ac}}" data-dtype="String"
-                placeholder="{{localize 'WWN.items.ArmorAC'}}" title="{{localize 'WWN.items.ShockAC'}}" />
+                placeholder="{{localize 'TYOA.items.ArmorAC'}}" title="{{localize 'TYOA.items.ShockAC'}}" />
             </div>
           </div>
           <div class="form-group">
-            <label title="{{localize 'WWN.items.SkillDamageLong'}}">{{localize 'WWN.items.SkillDamageShort'}}</label>
+            <label title="{{localize 'TYOA.items.SkillDamageLong'}}">{{localize 'TYOA.items.SkillDamageShort'}}</label>
             <div class="form-fields">
               <input type="checkbox" name="system.skillDamage" value="{{system.skillDamage}}" {{checked
-                system.skillDamage}} data-dtype="Boolean" title="{{localize 'WWN.items.SkillDamageLong'}}" />
+                system.skillDamage}} data-dtype="Boolean" title="{{localize 'TYOA.items.SkillDamageLong'}}" />
             </div>
           </div>
           <div class="form-group">
-            <label title={{localize 'WWN.items.Charges' }}>{{localize 'WWN.items.Charges'}}</label>
+            <label title={{localize 'TYOA.items.Charges' }}>{{localize 'TYOA.items.Charges'}}</label>
             <div class="form-fields">
               <input type="number" name="system.charges.value" value="{{system.charges.value}}" data-dtype="Number"
-                title="{{localize 'WWN.items.CurrCharges'}}" />
+                title="{{localize 'TYOA.items.CurrCharges'}}" />
               <input type="number" name="system.charges.max" value="{{system.charges.max}}" data-dtype="Number"
-                title="{{localize 'WWN.items.MaxCharges'}}" />
+                title="{{localize 'TYOA.items.MaxCharges'}}" />
             </div>
           </div>
           <div class="form-group">
-            <label>{{localize "WWN.items.WeightlessLabel"}}</label>
+            <label>{{localize "TYOA.items.WeightlessLabel"}}</label>
             <div class="form-fields">
               <select name="system.weightless">
                 {{#select system.weightless}}

@@ -1,9 +1,9 @@
-import { WwnBaseItem } from "./base-item.js";
+import { TyoaBaseItem } from "./base-item.js";
 
 /**
  * Override and extend the basic :class:`Item` implementation
  */
- export class WwnAsset  extends WwnBaseItem {
+ export class TyoaAsset  extends TyoaBaseItem {
 
   popUpDialog;
 
@@ -63,8 +63,8 @@ import { WwnBaseItem } from "./base-item.js";
       PoolTerm.fromRolls([attackRolls[0], attackRolls[1]]),
     ]);
     const attackKey = isOffense
-      ? "WWN.faction.attack-roll"
-      : "WWN.faction.counter-roll";
+      ? "TYOA.faction.attack-roll"
+      : "TYOA.faction.counter-roll";
 
       const assetsWithLocationNotes = this.actor.items.filter(i => 
         i.id != this.id && i.type == "asset" && i.system.location === this.system.location && i.system.locationRoll
@@ -79,7 +79,7 @@ import { WwnBaseItem } from "./base-item.js";
       attackSpecial: this.system.attackSpecial,
       assetsWithLocationNotes
     };
-    const template = "systems/wwn/templates/chat/asset-attack.html";
+    const template = "systems/tyoa/templates/chat/asset-attack.html";
     const chatContent = await renderTemplate(template, dialogData);
 
     if (this.actor?.type == "faction") {
@@ -149,7 +149,7 @@ import { WwnBaseItem } from "./base-item.js";
       targetFactionsIdNames: factionIdNames,
       targets: targetFactions,
     };
-    const template = "systems/wwn/templates/items/dialogs/select-asset-target.html";
+    const template = "systems/tyoa/templates/items/dialogs/select-asset-target.html";
     const html = renderTemplate(template, dialogData);
 
     const _rollForm = async (html) => {
@@ -231,7 +231,7 @@ import { WwnBaseItem } from "./base-item.js";
         attackedAssetsWithLocationNotes,
         attackingAssetsWithLocationNotes,
       };
-      const template = "systems/wwn/templates/chat/asset-attack-def.html";
+      const template = "systems/tyoa/templates/chat/asset-attack-def.html";
       const chatContent = await renderTemplate(template, dialogData);
       if (this.actor?.type == "faction") {
         this.actor.logMessage(name, chatContent);
@@ -253,7 +253,7 @@ import { WwnBaseItem } from "./base-item.js";
         default: "roll",
         buttons: {
           roll: {
-            label: game.i18n.localize("WWN.faction.attack"),
+            label: game.i18n.localize("TYOA.faction.attack"),
             callback: _rollForm,
           },
         },
@@ -329,7 +329,7 @@ import { WwnBaseItem } from "./base-item.js";
           default: "attack",
         },
         {
-          classes: ["wwn.dialog"],
+          classes: ["tyoa.dialog"],
         }
       );
       d.render(true);

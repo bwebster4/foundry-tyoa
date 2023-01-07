@@ -1,13 +1,13 @@
-import { WwnActorSheet } from "./actor-sheet.js";
-import { WwnCharacterModifiers } from "../dialog/character-modifiers.js";
-import { WwnAdjustCurrency } from "../dialog/adjust-currency.js";
-import { WwnCharacterCreator } from "../dialog/character-creation.js";
+import { TyoaActorSheet } from "./actor-sheet.js";
+import { TyoaCharacterModifiers } from "../dialog/character-modifiers.js";
+import { TyoaAdjustCurrency } from "../dialog/adjust-currency.js";
+import { TyoaCharacterCreator } from "../dialog/character-creation.js";
 import insertionSort from "../insertionSort.js";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
  */
-export class WwnActorSheetCharacter extends WwnActorSheet {
+export class TyoaActorSheetCharacter extends TyoaActorSheet {
   constructor(...args) {
     super(...args);
   }
@@ -20,8 +20,8 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
    */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["wwn", "sheet", "actor", "character"],
-      template: "systems/wwn/templates/actors/character-sheet.html",
+      classes: ["tyoa", "sheet", "actor", "character"],
+      template: "systems/tyoa/templates/actors/character-sheet.html",
       width: 755,
       height: 625,
       resizable: false,
@@ -108,14 +108,14 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
   }
 
   generateScores() {
-    new WwnCharacterCreator(this.actor, {
+    new TyoaCharacterCreator(this.actor, {
       top: this.position.top + 40,
       left: this.position.left + (this.position.width - 400) / 2,
     }).render(true);
   }
 
   adjustCurrency() {
-    new WwnAdjustCurrency(this.actor, {
+    new TyoaAdjustCurrency(this.actor, {
       top: this.position.top + 300,
       left: this.position.left + (this.position.width - 200) / 2,
     }).render(true);
@@ -128,9 +128,9 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
   async getData() {
     const data = super.getData();
 
-    data.config.initiative = game.settings.get("wwn", "initiative") != "group";
-    data.config.showMovement = game.settings.get("wwn", "showMovement");
-    data.config.currencyTypes = game.settings.get("wwn", "currencyTypes");
+    data.config.initiative = game.settings.get("tyoa", "initiative") != "group";
+    data.config.showMovement = game.settings.get("tyoa", "showMovement");
+    data.config.currencyTypes = game.settings.get("tyoa", "currencyTypes");
 
     this._prepareItems(data);
     data.enrichedBiography = await TextEditor.enrichHTML(
@@ -145,12 +145,12 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
   }
 
   async _chooseLang() {
-    const languages = game.settings.get("wwn", "languageList");
+    const languages = game.settings.get("tyoa", "languageList");
     const choices = languages.split(",");
 
     let templateData = { choices: choices },
       dlg = await renderTemplate(
-        "systems/wwn/templates/actors/dialogs/lang-create.html",
+        "systems/tyoa/templates/actors/dialogs/lang-create.html",
         templateData
       );
     //Create Dialog window
@@ -160,7 +160,7 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
         content: dlg,
         buttons: {
           ok: {
-            label: game.i18n.localize("WWN.Ok"),
+            label: game.i18n.localize("TYOA.Ok"),
             icon: '<i class="fas fa-check"></i>',
             callback: (html) => {
               resolve({
@@ -170,7 +170,7 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
           },
           cancel: {
             icon: '<i class="fas fa-times"></i>',
-            label: game.i18n.localize("WWN.Cancel"),
+            label: game.i18n.localize("TYOA.Cancel"),
           },
         },
         default: "ok",
@@ -181,17 +181,17 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
   async _chooseItemType(choices = ["focus", "ability"]) {
     let templateData = { types: choices },
       dlg = await renderTemplate(
-        "systems/wwn/templates/items/entity-create.html",
+        "systems/tyoa/templates/items/entity-create.html",
         templateData
       );
     //Create Dialog window
     return new Promise((resolve) => {
       new Dialog({
-        title: game.i18n.localize("WWN.dialog.createItem"),
+        title: game.i18n.localize("TYOA.dialog.createItem"),
         content: dlg,
         buttons: {
           ok: {
-            label: game.i18n.localize("WWN.Ok"),
+            label: game.i18n.localize("TYOA.Ok"),
             icon: '<i class="fas fa-check"></i>',
             callback: (html) => {
               resolve({
@@ -202,7 +202,7 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
           },
           cancel: {
             icon: '<i class="fas fa-times"></i>',
-            label: game.i18n.localize("WWN.Cancel"),
+            label: game.i18n.localize("TYOA.Cancel"),
           },
         },
         default: "ok",
@@ -213,7 +213,7 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
   _pushLang(table) {
     const data = this.actor.system;
     let update = duplicate(data[table]);
-    let language = game.settings.get("wwn", "languageList");
+    let language = game.settings.get("tyoa", "languageList");
     let languages = language.split(",");
     this._chooseLang().then((dialogInput) => {
       const name = languages[dialogInput.choice];
@@ -254,7 +254,7 @@ export class WwnActorSheetCharacter extends WwnActorSheet {
 
   _onShowModifiers(event) {
     event.preventDefault();
-    new WwnCharacterModifiers(this.actor, {
+    new TyoaCharacterModifiers(this.actor, {
       top: this.position.top + 40,
       left: this.position.left + (this.position.width - 400) / 2,
     }).render(true);

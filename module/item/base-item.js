@@ -2,6 +2,6 @@
 /**
  * Override and extend the basic :class:`Item` implementation
  */
-export class WwnBaseItem extends Item {
+export class TyoaBaseItem extends Item {
 
 }

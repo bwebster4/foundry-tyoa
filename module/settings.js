@@ -1,8 +1,8 @@
 export const registerSettings = function () {
 
-  game.settings.register("wwn", "randomHP", {
-    name: game.i18n.localize("WWN.Setting.RandomHP"),
-    hint: game.i18n.localize("WWN.Setting.RandomHPHint"),
+  game.settings.register("tyoa", "randomHP", {
+    name: game.i18n.localize("TYOA.Setting.RandomHP"),
+    hint: game.i18n.localize("TYOA.Setting.RandomHPHint"),
     default: false,
     scope: "client",
     type: Boolean,
@@ -10,51 +10,51 @@ export const registerSettings = function () {
     requiresReload: true
   });
 
-  game.settings.register("wwn", "initiative", {
-    name: game.i18n.localize("WWN.Setting.Initiative"),
-    hint: game.i18n.localize("WWN.Setting.InitiativeHint"),
+  game.settings.register("tyoa", "initiative", {
+    name: game.i18n.localize("TYOA.Setting.Initiative"),
+    hint: game.i18n.localize("TYOA.Setting.InitiativeHint"),
     default: "group",
     scope: "world",
     type: String,
     config: true,
     choices: {
-      individual: "WWN.Setting.InitiativeIndividual",
-      group: "WWN.Setting.InitiativeGroup",
+      individual: "TYOA.Setting.InitiativeIndividual",
+      group: "TYOA.Setting.InitiativeGroup",
     },
     requiresReload: true
   });
 
-  game.settings.register("wwn", "rerollInitiative", {
-    name: game.i18n.localize("WWN.Setting.RerollInitiative"),
-    hint: game.i18n.localize("WWN.Setting.RerollInitiativeHint"),
+  game.settings.register("tyoa", "rerollInitiative", {
+    name: game.i18n.localize("TYOA.Setting.RerollInitiative"),
+    hint: game.i18n.localize("TYOA.Setting.RerollInitiativeHint"),
     default: "keep",
     scope: "world",
     type: String,
     config: true,
     choices: {
-      keep: "WWN.Setting.InitiativeKeep",
-      reset: "WWN.Setting.InitiativeReset",
-      reroll: "WWN.Setting.InitiativeReroll",
+      keep: "TYOA.Setting.InitiativeKeep",
+      reset: "TYOA.Setting.InitiativeReset",
+      reroll: "TYOA.Setting.InitiativeReroll",
     }
   });
 
-  game.settings.register("wwn", "movementRate", {
-    name: game.i18n.localize("WWN.Setting.MovementRate"),
-    hint: game.i18n.localize("WWN.Setting.MovementRateHint"),
-    default: "movewwn",
+  game.settings.register("tyoa", "movementRate", {
+    name: game.i18n.localize("TYOA.Setting.MovementRate"),
+    hint: game.i18n.localize("TYOA.Setting.MovementRateHint"),
+    default: "movetyoa",
     scope: "world",
     type: String,
     config: true,
     choices: {
-      movewwn: "WWN.Setting.MoveWWN",
-      movebx: "WWN.Setting.MoveBX",
+      movetyoa: "TYOA.Setting.MoveTYOA",
+      movebx: "TYOA.Setting.MoveBX",
     },
     requiresReload: true
   });
 
-  game.settings.register("wwn", "showMovement", {
-    name: game.i18n.localize("WWN.Setting.showMovement"),
-    hint: game.i18n.localize("WWN.Setting.showMovementHint"),
+  game.settings.register("tyoa", "showMovement", {
+    name: game.i18n.localize("TYOA.Setting.showMovement"),
+    hint: game.i18n.localize("TYOA.Setting.showMovementHint"),
     default: false,
     scope: "world",
     type: Boolean,
@@ -62,51 +62,51 @@ export const registerSettings = function () {
     requiresReload: true
   });
 
-  game.settings.register("wwn", "morale", {
-    name: game.i18n.localize("WWN.Setting.Morale"),
-    hint: game.i18n.localize("WWN.Setting.MoraleHint"),
+  game.settings.register("tyoa", "morale", {
+    name: game.i18n.localize("TYOA.Setting.Morale"),
+    hint: game.i18n.localize("TYOA.Setting.MoraleHint"),
     default: true,
     scope: "world",
     type: Boolean,
     config: true,
   });
 
-  game.settings.register("wwn", "hideInstinct", {
-    name: game.i18n.localize("WWN.Setting.hideInstinct"),
-    hint: game.i18n.localize("WWN.Setting.hideInstinctHint"),
+  game.settings.register("tyoa", "hideInstinct", {
+    name: game.i18n.localize("TYOA.Setting.hideInstinct"),
+    hint: game.i18n.localize("TYOA.Setting.hideInstinctHint"),
     default: false,
     scope: "world",
     type: Boolean,
     config: true
   });
 
-  game.settings.register("wwn", "languageList", {
-    name: game.i18n.localize("WWN.Languages"),
-    hint: game.i18n.localize("WWN.LanguagesHint"),
+  game.settings.register("tyoa", "languageList", {
+    name: game.i18n.localize("TYOA.Languages"),
+    hint: game.i18n.localize("TYOA.LanguagesHint"),
     default: "Trade Cant,Ancient Vothian,Old Vothian,Modern Vothian,Ancient Olok,Brass Speech,Ancient Lin,Emedian,Ancient Osrin,Thurian,Ancient Khalan,Llaigisan,Anak Speech,Predecessant,Abased,Recurrent,Deep Speech",
     scope: "world",
     type: String,
     config: true,
   });
 
-  game.settings.register("wwn", "xpConfig", {
-    name: game.i18n.localize("WWN.Setting.xpConfig"),
-    hint: game.i18n.localize("WWN.Setting.xpConfigHint"),
+  game.settings.register("tyoa", "xpConfig", {
+    name: game.i18n.localize("TYOA.Setting.xpConfig"),
+    hint: game.i18n.localize("TYOA.Setting.xpConfigHint"),
     default: "xpFast",
     scope: "world",
     type: String,
     config: true,
     choices: {
-      xpFast: "WWN.Setting.xpFast",
-      xpSlow: "WWN.Setting.xpSlow",
-      xpCustom: "WWN.Setting.xpCustom"
+      xpFast: "TYOA.Setting.xpFast",
+      xpSlow: "TYOA.Setting.xpSlow",
+      xpCustom: "TYOA.Setting.xpCustom"
     },
     requiresReload: true
   });
 
-  game.settings.register("wwn", "xpCustomList", {
-    name: game.i18n.localize("WWN.Setting.xpCustomList"),
-    hint: game.i18n.localize("WWN.Setting.xpCustomListHint"),
+  game.settings.register("tyoa", "xpCustomList", {
+    name: game.i18n.localize("TYOA.Setting.xpCustomList"),
+    hint: game.i18n.localize("TYOA.Setting.xpCustomListHint"),
     default: [
       2000,
       4000,
@@ -128,21 +128,21 @@ export const registerSettings = function () {
     requiresReload: true
   });
 
-  game.settings.register("wwn", "currencyTypes", {
-    name: game.i18n.localize("WWN.items.Currency"),
-    hint: game.i18n.localize("WWN.items.CurrencyHint"),
-    default: "currencywwn",
+  game.settings.register("tyoa", "currencyTypes", {
+    name: game.i18n.localize("TYOA.items.Currency"),
+    hint: game.i18n.localize("TYOA.items.CurrencyHint"),
+    default: "currencytyoa",
     scope: "world",
     type: String,
     config: true,
     choices: {
-      currencywwn: "WWN.Setting.CurrencyWWN",
-      currencybx: "WWN.Setting.CurrencyBX",
+      currencytyoa: "TYOA.Setting.CurrencyTYOA",
+      currencybx: "TYOA.Setting.CurrencyBX",
     },
     requiresReload: true
   });
 
-  game.settings.register("wwn", "systemMigrationVersion", {
+  game.settings.register("tyoa", "systemMigrationVersion", {
     config: false,
     scope: "world",
     type: String,

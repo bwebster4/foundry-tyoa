@@ -10,14 +10,14 @@
  * @param {number} slot     The hotbar slot to use
  * @returns {Promise}
  */
-export async function createWwnMacro(data, slot) {
+export async function createTyoaMacro(data, slot) {
     if ( data.type !== "Item" ) return;
     const item = fromUuidSync(data.uuid);
     if (!( "system" in item ) ) return ui.notifications.warn("You can only create macro buttons for owned Items");
     // const item = itemFetch.system;
   
     // Create the macro command
-    const command = `game.wwn.rollItemMacro("${item.name}");`;
+    const command = `game.tyoa.rollItemMacro("${item.name}");`;
     let macro = game.macros.find(m => (m.name === item.name) && (m.command === command));
     if ( !macro ) {
       macro = await Macro.create({
@@ -25,7 +25,7 @@ export async function createWwnMacro(data, slot) {
         type: "script",
         img: item.img,
         command: command,
-        flags: {"WWN.itemMacro": true}
+        flags: {"TYOA.itemMacro": true}
       });
     }
     game.user.assignHotbarMacro(macro, slot);

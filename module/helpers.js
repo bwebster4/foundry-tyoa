@@ -55,13 +55,13 @@ export const registerHelpers = async function () {
   });
 
   Handlebars.registerHelper("getTagIcon", function (tag) {
-    let idx = Object.keys(CONFIG.WWN.tags).find(k => (CONFIG.WWN.tags[k] == tag));
-    return CONFIG.WWN.tag_images[idx];
+    let idx = Object.keys(CONFIG.TYOA.tags).find(k => (CONFIG.TYOA.tags[k] == tag));
+    return CONFIG.TYOA.tag_images[idx];
   });
 
   Handlebars.registerHelper("getTagDesc", function (tag) {
-    let idd = Object.keys(CONFIG.WWN.tags).find(k => (CONFIG.WWN.tags[k] == tag));
-    return game.i18n.localize(CONFIG.WWN.tag_desc[idd]);
+    let idd = Object.keys(CONFIG.TYOA.tags).find(k => (CONFIG.TYOA.tags[k] == tag));
+    return game.i18n.localize(CONFIG.TYOA.tag_desc[idd]);
   });
 
   Handlebars.registerHelper("counter", function (status, value, max) {

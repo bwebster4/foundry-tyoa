@@ -1,4 +1,4 @@
-export class WwnFaction extends Actor {
+export class TyoaFaction extends Actor {
   prepareData() {
     super.prepareData();
     const data = this.system;
@@ -37,14 +37,14 @@ export class WwnFaction extends Actor {
   async _onCreate() {
     await this.update({
       "token.actorLink": true,
-      "img" : "systems/wwn/assets/default/faction.png"
+      "img" : "systems/tyoa/assets/default/faction.png"
     });
   }
 
   async createEmbeddedDocuments(embeddedName, data = [], context = {}) {
     data.map((item) => {
       if (item.img === undefined) {
-        item.img = WwnItem.defaultIcons[item.type];
+        item.img = TyoaItem.defaultIcons[item.type];
       }
     });
     super.createEmbeddedDocuments(embeddedName, data, context);
@@ -100,7 +100,7 @@ export class WwnFaction extends Actor {
       longContent,
       logRollString,
     };
-    const template = "systems/wwn/templates/chat/faction-log.html";
+    const template = "systems/tyoa/templates/chat/faction-log.html";
 
     const chatData = {
       speaker: ChatMessage.getSpeaker({ actor: this }),
@@ -306,12 +306,12 @@ export class WwnFaction extends Actor {
     }
     const performHome = await new Promise((resolve) => {
       Dialog.confirm({
-        title: game.i18n.format("WWN.faction.setHomeworld", {
+        title: game.i18n.format("TYOA.faction.setHomeworld", {
           name: journal.name,
         }),
         yes: () => resolve(true),
         no: () => resolve(false),
-        content: game.i18n.format("WWN.faction.setHomeworld", {
+        content: game.i18n.format("TYOA.faction.setHomeworld", {
           name: journal.name,
         }),
       });

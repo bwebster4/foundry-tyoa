@@ -1,13 +1,13 @@
 // eslint-disable-next-line no-unused-vars
-import { WwnActor } from '../actor/entity.js';
+import { TyoaActor } from '../actor/entity.js';
 
-export class WwnCharacterModifiers extends FormApplication {
+export class TyoaCharacterModifiers extends FormApplication {
   static get defaultOptions() {
     const options = super.defaultOptions;
-    options.classes = ["wwn", "dialog", "modifiers"],
+    options.classes = ["tyoa", "dialog", "modifiers"],
     options.id = 'sheet-modifiers';
     options.template =
-      'systems/wwn/templates/actors/dialogs/modifiers-dialog.html';
+      'systems/tyoa/templates/actors/dialogs/modifiers-dialog.html';
     options.width = 240;
     return options;
   }

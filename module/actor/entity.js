@@ -1,7 +1,7 @@
-import { WwnDice } from "../dice.js";
-import { WwnItem } from "../item/entity.js";
+import { TyoaDice } from "../dice.js";
+import { TyoaItem } from "../item/entity.js";
 
-export class WwnActor extends Actor {
+export class TyoaActor extends Actor {
   /**
    * Extends data from base Actor class
    */
@@ -28,7 +28,7 @@ export class WwnActor extends Actor {
     if (!game.user.isGM && !this.isOwner) return;
     data.map((item) => {
       if (item.img === undefined) {
-        item.img = WwnItem.defaultIcons[item.type];
+        item.img = TyoaItem.defaultIcons[item.type];
       }
     });
     super.createEmbeddedDocuments(embeddedName, data, context);
@@ -49,7 +49,7 @@ export class WwnActor extends Actor {
     }).then(() => {
       const speaker = ChatMessage.getSpeaker({ actor: this });
       ChatMessage.create({
-        content: game.i18n.format("WWN.messages.GetExperience", {
+        content: game.i18n.format("TYOA.messages.GetExperience", {
           name: this.name,
           value: modified,
         }),
@@ -84,7 +84,7 @@ export class WwnActor extends Actor {
     }).then(() => {
       const speaker = ChatMessage.getSpeaker({ actor: this });
       ChatMessage.create({
-        content: game.i18n.format("WWN.messages.GetCurrency", {
+        content: game.i18n.format("TYOA.messages.GetCurrency", {
           name: this.name,
           value,
         }),
@@ -110,7 +110,7 @@ export class WwnActor extends Actor {
   }
 
   rollSave(save, options = {}) {
-    const label = game.i18n.localize(`WWN.saves.${save}`);
+    const label = game.i18n.localize(`TYOA.saves.${save}`);
     const rollParts = ["1d20"];
 
     const data = {
@@ -120,13 +120,13 @@ export class WwnActor extends Actor {
         target: this.system.saves[save].value,
         magic: this.type === "character" ? this.system.scores.wis.mod : 0,
       },
-      details: game.i18n.format("WWN.roll.details.save", { save: label }),
+      details: game.i18n.format("TYOA.roll.details.save", { save: label }),
     };
 
     let skip = options.event && options.event.ctrlKey;
 
     const rollMethod =
-      this.type == "character" ? WwnDice.RollSave : WwnDice.Roll;
+      this.type == "character" ? TyoaDice.RollSave : TyoaDice.Roll;
 
     // Roll and return
     return rollMethod({
@@ -135,8 +135,8 @@ export class WwnActor extends Actor {
       data: data,
       skipDialog: skip,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("WWN.roll.save", { save: label }),
-      title: game.i18n.format("WWN.roll.save", {
+      flavor: game.i18n.format("TYOA.roll.save", { save: label }),
+      title: game.i18n.format("TYOA.roll.save", {
         save: this.name + " - " + label,
       }),
     });
@@ -154,14 +154,14 @@ export class WwnActor extends Actor {
     };
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
       skipDialog: false,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.localize("WWN.roll.morale"),
-      title: game.i18n.localize("WWN.roll.morale"),
+      flavor: game.i18n.localize("TYOA.roll.morale"),
+      title: game.i18n.localize("TYOA.roll.morale"),
     });
   }
 
@@ -177,19 +177,19 @@ export class WwnActor extends Actor {
     };
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
       skipDialog: false,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.localize("WWN.roll.instinct"),
-      title: game.i18n.localize("WWN.roll.instinct"),
+      flavor: game.i18n.localize("TYOA.roll.instinct"),
+      title: game.i18n.localize("TYOA.roll.instinct"),
     });
   }
 
   rollLoyalty(options = {}) {
-    const label = game.i18n.localize(`WWN.roll.loyalty`);
+    const label = game.i18n.localize(`TYOA.roll.loyalty`);
     const rollParts = ["2d6"];
 
     const data = {
@@ -201,7 +201,7 @@ export class WwnActor extends Actor {
     };
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
@@ -220,19 +220,19 @@ export class WwnActor extends Actor {
       roll: {
         type: "table",
         table: {
-          2: game.i18n.format("WWN.reaction.Hostile", {
+          2: game.i18n.format("TYOA.reaction.Hostile", {
             name: this.name,
           }),
-          3: game.i18n.format("WWN.reaction.Unfriendly", {
+          3: game.i18n.format("TYOA.reaction.Unfriendly", {
             name: this.name,
           }),
-          6: game.i18n.format("WWN.reaction.Neutral", {
+          6: game.i18n.format("TYOA.reaction.Neutral", {
             name: this.name,
           }),
-          9: game.i18n.format("WWN.reaction.Indifferent", {
+          9: game.i18n.format("TYOA.reaction.Indifferent", {
             name: this.name,
           }),
-          12: game.i18n.format("WWN.reaction.Friendly", {
+          12: game.i18n.format("TYOA.reaction.Friendly", {
             name: this.name,
           }),
         },
@@ -242,19 +242,19 @@ export class WwnActor extends Actor {
     let skip = options.event && options.event.ctrlKey;
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
       skipDialog: skip,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.localize("WWN.reaction.check"),
-      title: game.i18n.localize("WWN.reaction.check"),
+      flavor: game.i18n.localize("TYOA.reaction.check"),
+      title: game.i18n.localize("TYOA.reaction.check"),
     });
   }
 
   rollCheck(score, options = {}) {
-    const label = game.i18n.localize(`WWN.scores.${score}.long`);
+    const label = game.i18n.localize(`TYOA.scores.${score}.long`);
     const rollParts = ["1d20"];
 
     const data = {
@@ -264,7 +264,7 @@ export class WwnActor extends Actor {
         target: this.system.scores[score].value,
       },
 
-      details: game.i18n.format("WWN.roll.details.attribute", {
+      details: game.i18n.format("TYOA.roll.details.attribute", {
         score: label,
       }),
     };
@@ -272,19 +272,19 @@ export class WwnActor extends Actor {
     let skip = options.event && options.event.ctrlKey;
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
       skipDialog: skip,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("WWN.roll.attribute", { attribute: label }),
-      title: game.i18n.format("WWN.roll.attribute", { attribute: label }),
+      flavor: game.i18n.format("TYOA.roll.attribute", { attribute: label }),
+      title: game.i18n.format("TYOA.roll.attribute", { attribute: label }),
     });
   }
 
   rollHitDice(options = {}) {
-    const label = game.i18n.localize(`WWN.roll.hd`);
+    const label = game.i18n.localize(`TYOA.roll.hd`);
     const rollParts = new Array(this.system.details.level || 1).fill(
       this.system.hp.hd
     );
@@ -302,7 +302,7 @@ export class WwnActor extends Actor {
     };
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
@@ -333,19 +333,19 @@ export class WwnActor extends Actor {
     };
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("WWN.roll.appearing", { type: label }),
-      title: game.i18n.format("WWN.roll.appearing", { type: label }),
+      flavor: game.i18n.format("TYOA.roll.appearing", { type: label }),
+      title: game.i18n.format("TYOA.roll.appearing", { type: label }),
     });
   }
 
   rollMonsterSkill(options = {}) {
-    const label = game.i18n.localize(`WWN.skill`);
+    const label = game.i18n.localize(`TYOA.skill`);
     const rollParts = ["2d6"];
 
     const data = {
@@ -355,7 +355,7 @@ export class WwnActor extends Actor {
         target: this.system.details.skill,
       },
 
-      details: game.i18n.format("WWN.roll.details.attribute", {
+      details: game.i18n.format("TYOA.roll.details.attribute", {
         score: label,
       }),
     };
@@ -364,14 +364,14 @@ export class WwnActor extends Actor {
     let skip = options.event && options.event.ctrlKey;
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: data,
       skipDialog: skip,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: game.i18n.format("WWN.roll.attribute", { attribute: label }),
-      title: game.i18n.format("WWN.roll.attribute", { attribute: label }),
+      flavor: game.i18n.format("TYOA.roll.attribute", { attribute: label }),
+      title: game.i18n.format("TYOA.roll.attribute", { attribute: label }),
     });
   }
 
@@ -399,14 +399,14 @@ export class WwnActor extends Actor {
     }
 
     // Damage roll
-    WwnDice.Roll({
+    TyoaDice.Roll({
       event: options.event,
       parts: dmgParts,
       data: rollData,
       skipDialog: true,
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `${attData.label} - ${game.i18n.localize("WWN.Damage")}`,
-      title: `${attData.label} - ${game.i18n.localize("WWN.Damage")}`,
+      flavor: `${attData.label} - ${game.i18n.localize("TYOA.Damage")}`,
+      title: `${attData.label} - ${game.i18n.localize("TYOA.Damage")}`,
     });
   }
 
@@ -443,7 +443,7 @@ export class WwnActor extends Actor {
     }
 
     let readyState = "";
-    let label = game.i18n.format("WWN.roll.attacks", {
+    let label = game.i18n.format("TYOA.roll.attacks", {
       name: this.name,
     });
     if (!attData.item) {
@@ -451,14 +451,14 @@ export class WwnActor extends Actor {
     } else {
       if (data.character) {
         if (attData.item.system.equipped) {
-          readyState = game.i18n.format("WWN.roll.readied");
+          readyState = game.i18n.format("TYOA.roll.readied");
         } else if (attData.item.system.stowed) {
-          readyState = game.i18n.format("WWN.roll.stowed");
+          readyState = game.i18n.format("TYOA.roll.stowed");
         } else {
-          readyState = game.i18n.format("WWN.roll.notCarried");
+          readyState = game.i18n.format("TYOA.roll.notCarried");
         }
       }
-      label = game.i18n.format("WWN.roll.attacksWith", {
+      label = game.i18n.format("TYOA.roll.attacksWith", {
         name: attData.item.name,
         readyState: readyState,
       });
@@ -547,7 +547,7 @@ export class WwnActor extends Actor {
     };
 
     // Roll and return
-    return WwnDice.Roll({
+    return TyoaDice.Roll({
       event: options.event,
       parts: rollParts,
       data: rollData,
@@ -585,7 +585,7 @@ export class WwnActor extends Actor {
 
   computeInit() {
     let initValue = 0;
-    if (game.settings.get("wwn", "initiative") != "group") {
+    if (game.settings.get("tyoa", "initiative") != "group") {
       if (this.type == "character") {
         initValue = this.system.scores.dex.mod + this.system.initiative.mod;
       } else {
@@ -604,7 +604,7 @@ export class WwnActor extends Actor {
     let level = data.details.level - 1;
 
     // Retrieve XP Settings
-    switch (game.settings.get("wwn", "xpConfig")) {
+    switch (game.settings.get("tyoa", "xpConfig")) {
       case "xpSlow":
         xpRate = [6, 15, 24, 36, 51, 69, 87, 105, 139];
         break;
@@ -612,7 +612,7 @@ export class WwnActor extends Actor {
         xpRate = [3, 6, 12, 18, 27, 39, 54, 72, 93];
         break;
       case "xpCustom":
-        xpRate = game.settings.get("wwn", "xpCustomList").split(",");
+        xpRate = game.settings.get("tyoa", "xpCustomList").split(",");
         break;
     }
 
@@ -703,7 +703,7 @@ export class WwnActor extends Actor {
       }
     });
 
-    if (game.settings.get("wwn", "currencyTypes") == "currencybx") {
+    if (game.settings.get("tyoa", "currencyTypes") == "currencybx") {
       const coinWeight =
         (data.currency.cp +
           data.currency.sp +
@@ -740,7 +740,7 @@ export class WwnActor extends Actor {
       const bonus = data.movement.bonus;
 
       let systemBase = [];
-      game.settings.get("wwn", "movementRate") == "movebx"
+      game.settings.get("tyoa", "movementRate") == "movebx"
         ? (systemBase = [40, 30, 20])
         : (systemBase = [30, 20, 15]);
 
@@ -942,7 +942,7 @@ export class WwnActor extends Actor {
     Object.keys(scores).map((score) => {
       let newMod =
         this.system.scores[score].tweak +
-        WwnActor._valueFromTable(standard, scores[score].value);
+        TyoaActor._valueFromTable(standard, scores[score].value);
       this.system.scores[score].mod = newMod;
     });
 
@@ -1034,9 +1034,9 @@ export class WwnActor extends Actor {
       "polymath",
     ];
     const skills = skillList.map((el) => {
-      const skillKey = `WWN.skills.${el}`;
-      const skillDesc = `WWN.skills.desc.${el}`;
-      const imagePath = `/systems/wwn/assets/skills/${el}.png`;
+      const skillKey = `TYOA.skills.${el}`;
+      const skillDesc = `TYOA.skills.desc.${el}`;
+      const imagePath = `/systems/tyoa/assets/skills/${el}.png`;
       return {
         type: "skill",
         name: game.i18n.localize(skillKey),
@@ -1063,7 +1063,7 @@ export class WwnActor extends Actor {
     if (data.type === "character" && game.userId == user) {
       // If there are no skills, add ones from compendium
       if (!data.items.filter((i) => i.type == "skill").length) {
-        let skillPack = game.packs.get("wwn.skills");
+        let skillPack = game.packs.get("tyoa.skills");
         let toAdd = await skillPack.getDocuments();
         let primarySkills = toAdd
           .filter((i) => i.system.secondary == false)

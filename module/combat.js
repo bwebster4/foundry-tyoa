@@ -1,5 +1,5 @@
-import { WwnDice } from "../module/dice.js";
-export class WwnCombat {
+import { TyoaDice } from "../module/dice.js";
+export class TyoaCombat {
   static async rollInitiative(combat, data) {
     // Check groups
     data.combatants = [];
@@ -8,7 +8,7 @@ export class WwnCombat {
     let alertGroups = {};
 
     combat.combatants.forEach((cbt) => {
-      const group = cbt.getFlag("wwn", "group");
+      const group = cbt.getFlag("tyoa", "group");
       groups[group] = { present: true };
       data.combatants.push(cbt);
       let alert = cbt.actor.items.filter((a) => a.name == "Alert");
@@ -38,8 +38,8 @@ export class WwnCombat {
 
       let roll = new Roll(rollParts.join("+")).roll({ async: false });
       roll.toMessage({
-        flavor: game.i18n.format("WWN.roll.initiative", {
-          group: CONFIG["WWN"].colors[group],
+        flavor: game.i18n.format("TYOA.roll.initiative", {
+          group: CONFIG["TYOA"].colors[group],
         }),
       });
       groups[group].initiative = roll.total;
@@ -50,7 +50,7 @@ export class WwnCombat {
       if (!data.combatants[i].actor) {
         return;
       }
-      const group = data.combatants[i].getFlag("wwn", "group");
+      const group = data.combatants[i].getFlag("tyoa", "group");
       let alert = data.combatants[i].actor.items.filter((a) => a.name == "Alert");
       data.combatants[i].update({ initiative: groups[group].initiative });
       if (alert.length > 0) {
@@ -63,7 +63,7 @@ export class WwnCombat {
   }
 
   static async resetInitiative(combat, data) {
-    let reroll = game.settings.get("wwn", "rerollInitiative");
+    let reroll = game.settings.get("tyoa", "rerollInitiative");
     if (!["reset", "reroll"].includes(reroll)) {
       return;
     }
@@ -85,12 +85,12 @@ export class WwnCombat {
         // Roll initiative
         roll = new Roll("1d8+" + c.actor.system.initiative.value).roll({ async: false });
         roll.toMessage({
-          flavor: game.i18n.format('WWN.roll.individualInit', { name: c.token.name })
+          flavor: game.i18n.format('TYOA.roll.individualInit', { name: c.token.name })
         });
         if (alert.length > 0) {
           roll2 = new Roll("1d8+" + c.actor.system.initiative.value).roll({ async: false });
           roll2.toMessage({
-            flavor: game.i18n.format('WWN.roll.individualInit', { name: c.token.name })
+            flavor: game.i18n.format('TYOA.roll.individualInit', { name: c.token.name })
           });
         }
 
@@ -126,7 +126,7 @@ export class WwnCombat {
           : span.innerHTML;
     });
 
-    let init = game.settings.get("wwn", "initiative") === "group";
+    let init = game.settings.get("tyoa", "initiative") === "group";
     if (!init) {
       return;
     }
@@ -146,19 +146,19 @@ export class WwnCombat {
 
       // Get group color
       const cmbtant = object.viewed.combatants.get(ct.dataset.combatantId);
-      let color = cmbtant.getFlag("wwn", "group");
+      let color = cmbtant.getFlag("tyoa", "group");
 
       // Append colored flag
       let controls = $(ct).find(".combatant-controls");
       controls.prepend(
-        `<a class='combatant-control flag' style='color:${color}' title="${CONFIG.WWN.colors[color]}"><i class='fas fa-flag'></i></a>`
+        `<a class='combatant-control flag' style='color:${color}' title="${CONFIG.TYOA.colors[color]}"><i class='fas fa-flag'></i></a>`
       );
     });
-    WwnCombat.addListeners(html);
+    TyoaCombat.addListeners(html);
   }
 
   static updateCombatant(combat, combatant, data) {
-    let init = game.settings.get("wwn", "initiative");
+    let init = game.settings.get("tyoa", "initiative");
     // Why do you reroll ?
     if (data.initiative && init == "group") {
       let groupInit = data.initiative;
@@ -168,7 +168,7 @@ export class WwnCombat {
           ct.initiative &&
           ct.initiative != "-789.00" &&
           ct.id != data.id &&
-          ct.flags.wwn.group == combatant.flags.wwn.group
+          ct.flags.tyoa.group == combatant.flags.tyoa.group
         ) {
           groupInit = ct.initiative;
           // Set init
@@ -185,7 +185,7 @@ export class WwnCombat {
         return;
       }
       let currentColor = ev.currentTarget.style.color;
-      let colors = Object.keys(CONFIG.WWN.colors);
+      let colors = Object.keys(CONFIG.TYOA.colors);
       let index = colors.indexOf(currentColor);
       if (index + 1 == colors.length) {
         index = 0;
@@ -194,7 +194,7 @@ export class WwnCombat {
       }
       let id = $(ev.currentTarget).closest(".combatant")[0].dataset.combatantId;
       const combatant = game.combat.combatants.get(id);
-      combatant.setFlag('wwn', 'group', colors[index]);
+      combatant.setFlag('tyoa', 'group', colors[index]);
     });
 
     html.find('.combat-control[data-control="reroll"]').click((ev) => {
@@ -202,7 +202,7 @@ export class WwnCombat {
         return;
       }
       let data = {};
-      WwnCombat.rollInitiative(game.combat, data);
+      TyoaCombat.rollInitiative(game.combat, data);
       /* game.combat.update({ system: data }).then(() => {
         game.combat.setupTurns();
       }); */
@@ -213,7 +213,7 @@ export class WwnCombat {
     options.unshift({
       name: "Set Active",
       icon: '<i class="fas fa-star-of-life"></i>',
-      callback: WwnCombat.activateCombatant
+      callback: TyoaCombat.activateCombatant
     });
   }
 
@@ -232,11 +232,11 @@ export class WwnCombat {
         break;
     }
     data.flags = {
-      wwn: {
+      tyoa: {
         group: color,
       },
     };
-    combat.updateSource({ flags: { wwn: { group: color } } });
+    combat.updateSource({ flags: { tyoa: { group: color } } });
   }
 
   static activateCombatant(li) {
@@ -249,8 +249,8 @@ export class WwnCombat {
   }
 
   static async preUpdateCombat(combat, data, diff, id) {
-    const init = game.settings.get("wwn", "initiative");
-    const reroll = game.settings.get("wwn", "rerollInitiative");
+    const init = game.settings.get("tyoa", "initiative");
+    const reroll = game.settings.get("tyoa", "rerollInitiative");
     /*if (!data.round) {
       return;
     }*/
@@ -266,23 +266,23 @@ export class WwnCombat {
         }
       };
       if (reroll === "reset") {
-        WwnCombat.resetInitiative(combat, data, diff, id);
+        TyoaCombat.resetInitiative(combat, data, diff, id);
         return;
       } else if (reroll === "keep") {
         return;
       }
     }
     if (init === "group") {
-      await WwnCombat.rollInitiative(combat, data, diff, id);
+      await TyoaCombat.rollInitiative(combat, data, diff, id);
     } else {
-      await WwnCombat.individualInitiative(combat, data, diff, id);
+      await TyoaCombat.individualInitiative(combat, data, diff, id);
     }
   }
 
   static async preCreateToken(token, data, options, userId) {
     const scene = token.parent;
     const actor = game.actors.get(data.actorId);
-    if (!actor || data.actorLink || !game.settings.get("wwn", "randomHP")) {
+    if (!actor || data.actorLink || !game.settings.get("tyoa", "randomHP")) {
       return token.updateSource(data);
     }
     const roll = new Roll(token.actor.system.hp.hd).roll({ async: false });

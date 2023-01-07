@@ -10,14 +10,14 @@
         <div class="flexrow">
             <div class="skill-details">
                 <div class="form-group">
-                    <label><b>{{localize 'WWN.details.level'}}</b></label>
+                    <label><b>{{localize 'TYOA.details.level'}}</b></label>
                     <div class="form-fields">
                         <input type="number" name="system.ownedLevel" value="{{system.ownedLevel}}"
                             data-dtype="Number" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label><b>{{localize 'WWN.attribute'}}</b></label>
+                    <label><b>{{localize 'TYOA.attribute'}}</b></label>
                     <div class="form-fields">
                         <select name="system.score">
                             {{#select system.score}} {{#each config.scores as
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label><b>{{localize 'WWN.dialog.skillDice'}}</b></label>
+                    <label><b>{{localize 'TYOA.dialog.skillDice'}}</b></label>
                     <div class="form-fields">
                         <select id="skillDice" name="system.skillDice">
                             {{#select system.skillDice}}
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label><b>{{localize 'WWN.skills.secondary'}}</b></label>
+                    <label><b>{{localize 'TYOA.skills.secondary'}}</b></label>
                     <div class="form-fields">
                         <input type="checkbox" name="system.secondary" value="{{system.secondary}}" {{checked
                             system.secondary}} data-dtype="Boolean" />

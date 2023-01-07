@@ -6,23 +6,23 @@
     {{#if user.isGM}}
     <div class="item-controls flexrow">
       <div class="item-control">
-        <button type="button" class="deal-xp" title="{{localize 'WWN.dialog.xp.deal'}}"><i
+        <button type="button" class="deal-xp" title="{{localize 'TYOA.dialog.xp.deal'}}"><i
             class="fas fa-level-up-alt"></i></button>
       </div>
       <div class="item-control">
-        <button type="button" class="deal-currency" title="{{localize 'WWN.dialog.currency.deal'}}"><i
+        <button type="button" class="deal-currency" title="{{localize 'TYOA.dialog.currency.deal'}}"><i
             class="fas fa-coins"></i></button>
       </div>
       <div class="item-control">
-        <button type="button" class="select-actors" title="{{localize 'WWN.dialog.selectActors'}}"><i
+        <button type="button" class="select-actors" title="{{localize 'TYOA.dialog.selectActors'}}"><i
             class="fas fa-users"></i></button>
       </div>
     </div>
-    {{localize 'WWN.dialog.partySelectHint'}}
+    {{localize 'TYOA.dialog.partySelectHint'}}
     {{/if}}
   </div>
   <ol class="actor-list">
-    {{#each data.documents as |e|}} {{#if e.flags.wwn.party}}
+    {{#each data.documents as |e|}} {{#if e.flags.tyoa.party}}
     <li class="actor flexrow" data-actor-id="{{e.id}}">
       <div class="field-img">
         <img src="{{e.img}}" />
@@ -35,29 +35,29 @@
           <div class="field-name flex2">
             <strong>{{e.name}}</strong>
           </div>
-          <div class="field-long" title="{{localize 'WWN.Health'}}">
+          <div class="field-long" title="{{localize 'TYOA.Health'}}">
             <i class="fas fa-heart"></i>
             {{e.system.hp.value}}/{{e.system.hp.max}}
           </div>
-          <div class="field-short" title="{{localize 'WWN.ArmorClass'}}">
+          <div class="field-short" title="{{localize 'TYOA.ArmorClass'}}">
             <i class="fas fa-shield-alt"></i>
             <strong>{{e.system.aac.value}}</strong>
             <sub>{{e.system.aac.naked}}</sub>
           </div>
-          <div class="field-short" title="{{localize 'WWN.SystemStrainLong'}}">
+          <div class="field-short" title="{{localize 'TYOA.SystemStrainLong'}}">
             <i class="fas fa-tint"></i>
             <strong>{{e.system.details.strain.value}}</strong>
             <sub>{{e.system.details.strain.max}}</sub>
           </div>
         </div>
         <div class="flexrow field-row">
-          <div class="field-short" title="{{localize 'WWN.AB'}}">
+          <div class="field-short" title="{{localize 'TYOA.AB'}}">
             <i class="fas fa-crosshairs"></i>
             {{e.system.thac0.bba}}
           </div>
           <div class="field-long flex3">
-            <strong>{{localize 'WWN.category.saves'}}</strong>
-            {{localize 'WWN.saves.summary'
+            <strong>{{localize 'TYOA.category.saves'}}</strong>
+            {{localize 'TYOA.saves.summary'
             evasion = e.system.saves.evasion.value
             mental = e.system.saves.mental.value
             physical = e.system.saves.physical.value
@@ -65,22 +65,22 @@
             }}
           </div>
           <div class="field-short flex2">
-            <i class="fas fa-shoe-prints" title="{{localize 'WWN.movement.base'}}"></i>
-            <strong title="{{localize 'WWN.movement.encounter.long'}}">{{e.system.movement.base}}</strong>
-            <span title="{{localize 'WWN.movement.exploration.long'}}">{{e.system.movement.exploration}}</span>
+            <i class="fas fa-shoe-prints" title="{{localize 'TYOA.movement.base'}}"></i>
+            <strong title="{{localize 'TYOA.movement.encounter.long'}}">{{e.system.movement.base}}</strong>
+            <span title="{{localize 'TYOA.movement.exploration.long'}}">{{e.system.movement.exploration}}</span>
           </div>
         </div>
         <div class="flexrow field-row">
           <div class="field-short flex2">
-            <strong>{{localize 'WWN.resources.rations'}}</strong>
+            <strong>{{localize 'TYOA.resources.rations'}}</strong>
             {{e.system.details.resources.rations}}
           </div>
           <div class="field-short flex2">
-            <strong>{{localize 'WWN.resources.torches'}}</strong>
+            <strong>{{localize 'TYOA.resources.torches'}}</strong>
             {{e.system.details.resources.torches}}
           </div>
           <div class="field-short flex2">
-            <strong>{{localize 'WWN.resources.oil'}}</strong>
+            <strong>{{localize 'TYOA.resources.oil'}}</strong>
             {{e.system.details.resources.oil}}
           </div>
         </div>

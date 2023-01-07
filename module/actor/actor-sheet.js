@@ -1,7 +1,7 @@
-import { WwnActor } from "./entity.js";
-import { WwnEntityTweaks } from "../dialog/entity-tweaks.js";
+import { TyoaActor } from "./entity.js";
+import { TyoaEntityTweaks } from "../dialog/entity-tweaks.js";
 
-export class WwnActorSheet extends ActorSheet {
+export class TyoaActorSheet extends ActorSheet {
   constructor(...args) {
     super(...args);
   }
@@ -12,7 +12,7 @@ export class WwnActorSheet extends ActorSheet {
     data.owner = this.actor.isOwner;
     data.editable = this.actor.sheet.isEditable;
 
-    data.config = CONFIG.WWN;
+    data.config = CONFIG.TYOA;
     data.isNew = this.actor.isNew();
 
     return data;
@@ -328,7 +328,7 @@ export class WwnActorSheet extends ActorSheet {
 
   _onConfigureActor(event) {
     event.preventDefault();
-    new WwnEntityTweaks(this.actor, {
+    new TyoaEntityTweaks(this.actor, {
       top: this.position.top + 40,
       left: this.position.left + (this.position.width - 400) / 2,
     }).render(true);
@@ -346,7 +346,7 @@ export class WwnActorSheet extends ActorSheet {
     if (this.options.editable && canConfigure) {
       buttons = [
         {
-          label: game.i18n.localize("WWN.dialog.tweaks"),
+          label: game.i18n.localize("TYOA.dialog.tweaks"),
           class: "configure-actor",
           icon: "fas fa-code",
           onclick: (ev) => this._onConfigureActor(ev),

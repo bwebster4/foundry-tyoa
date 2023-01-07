@@ -1,4 +1,4 @@
-export class WwnDice {
+export class TyoaDice {
   static digestResult(data, roll) {
     let result = {
       isSuccess: false,
@@ -52,7 +52,7 @@ export class WwnDice {
         const pattern = /\[(.+)\.([\w]+)\]/;
         const iA = iL.match(pattern);
         const pack = game.packs.get(iA[1]);
-        if ( game.settings.get("wwn", "hideInstinct") ) {
+        if ( game.settings.get("tyoa", "hideInstinct") ) {
           pack.getDocument(iA[2]).then(table => table.draw({rollMode: "gmroll"}));
         } else {
           pack.getDocument(iA[2]).then(table => table.draw());
@@ -71,7 +71,7 @@ export class WwnDice {
     form = null,
     rollTitle = null
   } = {}) {
-    const template = "systems/wwn/templates/chat/roll-result.html";
+    const template = "systems/tyoa/templates/chat/roll-result.html";
 
     let chatData = {
       user: game.user.id,
@@ -109,11 +109,11 @@ export class WwnDice {
       data.roll.blindroll = true;
     }
 
-    templateData.result = WwnDice.digestResult(data, roll);
+    templateData.result = TyoaDice.digestResult(data, roll);
 
     return new Promise((resolve) => {
       roll.render().then((r) => {
-        templateData.rollWWN = r;
+        templateData.rollTYOA = r;
         renderTemplate(template, templateData).then((content) => {
           chatData.content = content;
           // Dice So Nice
@@ -155,14 +155,14 @@ export class WwnDice {
 
     if (roll.total < targetAac) {
       result.details = game.i18n.format(
-        "WWN.messages.AttackAscendingFailure",
+        "TYOA.messages.AttackAscendingFailure",
         {
           bonus: result.target,
         }
       );
       return result;
       }
-      result.details = game.i18n.format("WWN.messages.AttackAscendingSuccess", {
+      result.details = game.i18n.format("TYOA.messages.AttackAscendingSuccess", {
         result: roll.total,
       });
       result.isSuccess = true;
@@ -180,7 +180,7 @@ export class WwnDice {
     rollTitle = null,
     dmgTitle = null
   } = {}) {
-    const template = "systems/wwn/templates/chat/roll-attack.html";
+    const template = "systems/tyoa/templates/chat/roll-attack.html";
 
     let chatData = {
       user: game.user.id,
@@ -191,7 +191,7 @@ export class WwnDice {
       title: title,
       flavor: flavor,
       data: data,
-      config: CONFIG.WWN,
+      config: CONFIG.TYOA,
       rollTitle: rollTitle,
       dmgTitle: dmgTitle
     };
@@ -219,11 +219,11 @@ export class WwnDice {
       data.roll.blindroll = true;
     }
 
-    templateData.result = WwnDice.digestAttackResult(data, roll);
+    templateData.result = TyoaDice.digestAttackResult(data, roll);
 
     return new Promise((resolve) => {
       roll.render().then((r) => {
-        templateData.rollWWN = r;
+        templateData.rollTYOA = r;
         dmgRoll.render().then((dr) => {
           templateData.rollDamage = dr;
           renderTemplate(template, templateData).then((content) => {
@@ -278,7 +278,7 @@ export class WwnDice {
     title = null,
   } = {}) {
     let rolled = false;
-    const template = "systems/wwn/templates/chat/roll-dialog.html";
+    const template = "systems/tyoa/templates/chat/roll-dialog.html";
     let dialogData = {
       formula: parts.join(" "),
       data: data,
@@ -293,21 +293,21 @@ export class WwnDice {
       flavor: flavor,
       speaker: speaker,
     };
-    if (skipDialog) { return WwnDice.sendRoll(rollData); }
+    if (skipDialog) { return TyoaDice.sendRoll(rollData); }
 
     let buttons = {
       ok: {
-        label: game.i18n.localize("WWN.Roll"),
+        label: game.i18n.localize("TYOA.Roll"),
         icon: '<i class="fas fa-dice-d20"></i>',
         callback: (html) => {
           rolled = true;
           rollData.form = html[0].querySelector("form");
-          roll = WwnDice.sendRoll(rollData);
+          roll = TyoaDice.sendRoll(rollData);
         },
       },
       cancel: {
         icon: '<i class="fas fa-times"></i>',
-        label: game.i18n.localize("WWN.Cancel"),
+        label: game.i18n.localize("TYOA.Cancel"),
         callback: (html) => { },
       },
     };
@@ -340,7 +340,7 @@ export class WwnDice {
     dmgTitle = null,
   } = {}) {
     let rolled = false;
-    const template = "systems/wwn/templates/chat/roll-dialog.html";
+    const template = "systems/tyoa/templates/chat/roll-dialog.html";
     let dialogData = {
       formula: parts.join(" "),
       data: data,
@@ -359,25 +359,25 @@ export class WwnDice {
     };
     if (skipDialog) {
       return ["melee", "missile", "attack"].includes(data.roll.type)
-        ? WwnDice.sendAttackRoll(rollData)
-        : WwnDice.sendRoll(rollData);
+        ? TyoaDice.sendAttackRoll(rollData)
+        : TyoaDice.sendRoll(rollData);
     }
 
     let buttons = {
       ok: {
-        label: game.i18n.localize("WWN.Roll"),
+        label: game.i18n.localize("TYOA.Roll"),
         icon: '<i class="fas fa-dice-d20"></i>',
         callback: (html) => {
           rolled = true;
           rollData.form = html[0].querySelector("form");
           roll = ["melee", "missile", "attack"].includes(data.roll.type)
-            ? WwnDice.sendAttackRoll(rollData)
-            : WwnDice.sendRoll(rollData);
+            ? TyoaDice.sendAttackRoll(rollData)
+            : TyoaDice.sendRoll(rollData);
         },
       },
       cancel: {
         icon: '<i class="fas fa-times"></i>',
-        label: game.i18n.localize("WWN.Cancel"),
+        label: game.i18n.localize("TYOA.Cancel"),
         callback: (html) => { },
       },
     };

@@ -1,11 +1,11 @@
-import { WwnActor } from "./entity.js";
-import { WwnActorSheet } from "./actor-sheet.js";
+import { TyoaActor } from "./entity.js";
+import { TyoaActorSheet } from "./actor-sheet.js";
 import insertionSort from "../insertionSort.js";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
  */
-export class WwnActorSheetMonster extends WwnActorSheet {
+export class TyoaActorSheetMonster extends TyoaActorSheet {
   constructor(...args) {
     super(...args);
   }
@@ -18,8 +18,8 @@ export class WwnActorSheetMonster extends WwnActorSheet {
    */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["wwn", "sheet", "monster", "actor"],
-      template: "systems/wwn/templates/actors/monster-sheet.html",
+      classes: ["tyoa", "sheet", "monster", "actor"],
+      template: "systems/tyoa/templates/actors/monster-sheet.html",
       width: 730,
       height: 625,
       resizable: false,
@@ -113,7 +113,7 @@ export class WwnActorSheetMonster extends WwnActorSheet {
     this._prepareItems(data);
 
     // Settings
-    data.config.morale = game.settings.get("wwn", "morale");
+    data.config.morale = game.settings.get("tyoa", "morale");
     if (!data.system.details.hasOwnProperty('instinctTable')) {
       data.system.details.instinctTable = {
         "table": "",
@@ -152,17 +152,17 @@ export class WwnActorSheetMonster extends WwnActorSheet {
   async _chooseItemType(choices = ["weapon", "armor", "shield", "item", "ability"]) {
     let templateData = { types: choices },
       dlg = await renderTemplate(
-        "systems/wwn/templates/items/entity-create.html",
+        "systems/tyoa/templates/items/entity-create.html",
         templateData
       );
     //Create Dialog window
     return new Promise((resolve) => {
       new Dialog({
-        title: game.i18n.localize("WWN.dialog.createItem"),
+        title: game.i18n.localize("TYOA.dialog.createItem"),
         content: dlg,
         buttons: {
           ok: {
-            label: game.i18n.localize("WWN.Ok"),
+            label: game.i18n.localize("TYOA.Ok"),
             icon: '<i class="fas fa-check"></i>',
             callback: (html) => {
               resolve({
@@ -173,7 +173,7 @@ export class WwnActorSheetMonster extends WwnActorSheet {
           },
           cancel: {
             icon: '<i class="fas fa-times"></i>',
-            label: game.i18n.localize("WWN.Cancel"),
+            label: game.i18n.localize("TYOA.Cancel"),
           },
         },
         default: "ok",
@@ -284,7 +284,7 @@ export class WwnActorSheetMonster extends WwnActorSheet {
       const li = $(ev.currentTarget).parents(".item");
       const item = this.actor.items.get(li.data("itemId"));
       let currentColor = item.system.pattern;
-      let colors = Object.keys(CONFIG.WWN.colors);
+      let colors = Object.keys(CONFIG.TYOA.colors);
       let index = colors.indexOf(currentColor);
       if (index + 1 == colors.length) {
         index = 0;

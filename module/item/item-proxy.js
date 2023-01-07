@@ -1,20 +1,20 @@
-import { WwnItem } from "./entity.js";
-import { WwnAsset } from "./asset.js";
+import { TyoaItem } from "./entity.js";
+import { TyoaAsset } from "./asset.js";
 
 //Provide a type string to class object mapping to keep our code clean
 const itemMappings = {
-  asset: WwnAsset,
-  spell: WwnItem,
-  ability: WwnItem,
-  armor: WwnItem,
-  weapon: WwnItem,
-  item: WwnItem,
-  focus: WwnItem,
-  art: WwnItem,
-  skill: WwnItem,
+  asset: TyoaAsset,
+  spell: TyoaItem,
+  ability: TyoaItem,
+  armor: TyoaItem,
+  weapon: TyoaItem,
+  item: TyoaItem,
+  focus: TyoaItem,
+  art: TyoaItem,
+  skill: TyoaItem,
 };
 
-export const WwnItemProxy = new Proxy(function () {}, {
+export const TyoaItemProxy = new Proxy(function () {}, {
   //Will intercept calls to the "new" operator
   construct: function (target, args) {
     const [data] = args;
@@ -35,7 +35,7 @@ export const WwnItemProxy = new Proxy(function () {}, {
         return function (data, options) {
           if (data.constructor === Array) {
             //Array of data, this happens when creating Actors imported from a compendium
-            return data.map(i => WwnItem.create(i, options));
+            return data.map(i => TyoaItem.create(i, options));
           }
 
           if (!itemMappings.hasOwnProperty(data.type))
@@ -52,7 +52,7 @@ export const WwnItemProxy = new Proxy(function () {}, {
 
       default:
         //Just forward any requested properties to the base Actor class
-        return WwnItem[prop];
+        return TyoaItem[prop];
     }
   },
 });

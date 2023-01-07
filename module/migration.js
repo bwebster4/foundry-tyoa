@@ -3,7 +3,7 @@
  * @returns {Promise}      A Promise which resolves once the migration is completed
  */
 export const migrateWorld = async function () {
-  ui.notifications.info(`Applying WWN System Migration for version ${game.system.version}. Please be patient and do not close your game or shut down your server.`, { permanent: true });
+  ui.notifications.info(`Applying TYOA System Migration for version ${game.system.version}. Please be patient and do not close your game or shut down your server.`, { permanent: true });
 
   for (let actor of game.actors.contents) {
     const updateData = await migrateActorDataToItemSkills(actor);
@@ -63,8 +63,8 @@ export const migrateWorld = async function () {
     await pack.configure({ locked: wasLocked });
   }
   // Set the migration as complete
-  game.settings.set("wwn", "systemMigrationVersion", game.system.version);
-  ui.notifications.info(`WWN System Migration to version ${game.system.version} completed!`, { permanent: true });
+  game.settings.set("tyoa", "systemMigrationVersion", game.system.version);
+  ui.notifications.info(`TYOA System Migration to version ${game.system.version} completed!`, { permanent: true });
 };
 
 /**
@@ -82,7 +82,7 @@ async function migrateActorDataToItemSkills(actor) {
   let skills = actor.items.filter((i) => i.type == "skill");
   if (!skills || skills.length == 0) {
     // This character needs skills
-    let skillPack = game.packs.get("wwn.skills");
+    let skillPack = game.packs.get("tyoa.skills");
     let toAdd = await skillPack.getDocuments();
     let primarySkills = toAdd.filter((i) => i.system.secondary == false).map(item => item.toObject());
     for (let skill of primarySkills) {

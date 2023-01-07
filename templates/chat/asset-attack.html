@@ -6,11 +6,11 @@
 
   <span>{{ attackKey }}:</span>
   <span title="">{{{ hitRoll }}}</span>
-  <span>{{localize 'WWN.faction.damage'}}:</span>
+  <span>{{localize 'TYOA.faction.damage'}}:</span>
   <span title="">{{{ damageRoll }}}</span>
 
   {{#if assetsWithLocationNotes}}
-  <b>{{localize 'WWN.faction.locationRollTitle'}}</b>:<br>
+  <b>{{localize 'TYOA.faction.locationRollTitle'}}</b>:<br>
     {{#each assetsWithLocationNotes as |faitems|}}
     <i>{{faitems.name}}</i>: {{faitems.system.locationRoll}}<Br>
     {{/each}}

@@ -1,15 +1,15 @@
-import { WwnActor } from "./entity.js";
-import { WwnFaction } from "./faction.js";
+import { TyoaActor } from "./entity.js";
+import { TyoaFaction } from "./faction.js";
 
 //Provide a type string to class object mapping to keep our code clean
 const actorMappings = {
-  character: WwnActor,
-  monster: WwnActor,
-  faction: WwnFaction,
+  character: TyoaActor,
+  monster: TyoaActor,
+  faction: TyoaFaction,
 
 };
 
-export const WwnActorProxy = new Proxy(function () {}, {
+export const TyoaActorProxy = new Proxy(function () {}, {
   //Will intercept calls to the "new" operator
   construct: function (target, args) {
     const [data] = args;
@@ -31,7 +31,7 @@ export const WwnActorProxy = new Proxy(function () {}, {
         return function (data, options) {
           if (data.constructor === Array) {
             //Array of data, this happens when creating Actors imported from a compendium
-            return data.map(i => WwnActor.create(i, options));
+            return data.map(i => TyoaActor.create(i, options));
           }
 
           if (!actorMappings.hasOwnProperty(data.type))
@@ -48,7 +48,7 @@ export const WwnActorProxy = new Proxy(function () {}, {
 
       default:
         //Just forward any requested properties to the base Actor class
-        return WwnActor[prop];
+        return TyoaActor[prop];
     }
   },
 });

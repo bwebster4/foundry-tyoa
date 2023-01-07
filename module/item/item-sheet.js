@@ -1,7 +1,7 @@
 /**
  * Extend the basic ItemSheet with some very simple modifications
  */
-export class WwnItemSheet extends ItemSheet {
+export class TyoaItemSheet extends ItemSheet {
   constructor(...args) {
     super(...args);
 
@@ -17,7 +17,7 @@ export class WwnItemSheet extends ItemSheet {
    */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["wwn", "sheet", "item"],
+      classes: ["tyoa", "sheet", "item"],
       width: 550,
       height: 510,
       resizable: true,
@@ -35,7 +35,7 @@ export class WwnItemSheet extends ItemSheet {
 
   /** @override */
   get template() {
-    const path = "systems/wwn/templates/items/";
+    const path = "systems/tyoa/templates/items/";
     return `${path}/${this.item.type}-sheet.html`;
   }
 
@@ -46,7 +46,7 @@ export class WwnItemSheet extends ItemSheet {
   getData() {
     const data = super.getData().data;
     data.editable = this.document.sheet.isEditable;
-    data.config = CONFIG.WWN;
+    data.config = CONFIG.TYOA;
     return data;
   }
 
