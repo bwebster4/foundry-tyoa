@@ -4,94 +4,24 @@
       {{#if (eq this.type 'character')}}
       <div class="column">
         <div class="form-group">
-          <label for="fullWarrior">{{localize "TYOA.Warrior"}}</label>
-          <div class="form-fields">
-            <input type="checkbox" name="system.warrior" id="fullWarrior" {{checked system.warrior}} data-dtype="Boolean" />
-          </div>
-        </div>
-        {{/if}}
-        <div class="form-group">
-          <label for="spellcaster">{{localize "TYOA.Spellcaster"}}</label>
-          <div class="form-fields">
-            <input type="checkbox" name="system.spells.enabled" id="spellcaster" {{checked system.spells.enabled}}
-              data-dtype="Boolean" />
-          </div>
-        </div>
-        {{#if (eq this.type 'character')}}
-        <div class="form-group">
-          <label for="retainer">{{localize "TYOA.Retainer"}}</label>
-          <div class="form-fields">
-            <input type="checkbox" name="system.retainer.enabled" id="retainer" {{checked system.retainer.enabled}}
-              data-dtype="Boolean" />
-          </div>
-        </div>
-        {{/if}}
-        <div class="form-group">
           <label>{{localize "TYOA.InitiativeBonus"}}</label>
           <div class="form-fields">
             <input type="number" name="system.initiative.mod" id="initiative" value="{{system.initiative.mod}}"
               data-dtype="Number" />
           </div>
         </div>
-        {{#if (eq this.type 'character')}}
         <div class="form-group">
-          <label>{{localize "TYOA.details.experience.bonus"}} (%)</label>
+          <label>{{localize "TYOA.ArmorClassBonusMelee"}}</label>
           <div class="form-fields">
-            <input type="number" name="system.details.xp.bonus" id="experience" value="{{system.details.xp.bonus}}"
-              data-dtype="Number" />
+            <input type="number" name="system.aacm.mod" id="aacm" value="{{system.aacm.mod}}"
+             data-dtype="Number" />
           </div>
         </div>
         <div class="form-group">
-          <label>{{localize "TYOA.details.experience.share"}} (%)</label>
+          <label>{{localize "TYOA.ArmorClassBonusRanged"}}</label>
           <div class="form-fields">
-            <input type="number" name="system.details.xp.share" id="experience-share" value="{{system.details.xp.share}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize "TYOA.items.currencyShare"}} (%)</label>
-          <div class="form-fields">
-            <input type="number" name="system.currency.share" id="currency-share" value="{{system.currency.share}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize "TYOA.ArmorClassBonus"}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.aac.mod" id="ac" value="{{system.aac.mod}}" data-dtype="Number" />
-          </div>
-        </div>
-        {{/if}}
-        <div class="form-group">
-          <label>{{localize 'TYOA.spells.CasterClass'}} 1</label>
-          <div class="form-fields">
-            <input type="text" name="system.classes.effort1.name" id="effort1" value="{{system.classes.effort1.name}}" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.spells.CasterClass'}} 2</label>
-          <div class="form-fields">
-            <input type="text" name="system.classes.effort2.name" id="effort2" value="{{system.classes.effort2.name}}" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.spells.CasterClass'}} 3</label>
-          <div class="form-fields">
-            <input type="text" name="system.classes.effort3.name" id="effort3" value="{{system.classes.effort3.name}}" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.spells.CasterClass'}} 4</label>
-          <div class="form-fields">
-            <input type="text" name="system.classes.effort4.name" id="effort4" value="{{system.classes.effort4.name}}" />
-          </div>
-        </div>
-        {{#if (eq this.type 'character')}}
-        <div class="form-group">
-          <label for="movementAuto">{{localize "TYOA.Setting.MovementAuto"}}</label>
-          <div class="form-fields">
-            <input type="checkbox" name="system.config.movementAuto" id="movementAuto" {{checked
-              system.config.movementAuto}} data-dtype="Boolean" {{#unless user.isGM}}disabled{{/unless}} />
+            <input type="number" name="system.aacr.mod" id="aacr" value="{{system.aacr.mod}}"
+             data-dtype="Number" />
           </div>
         </div>
         <div class="form-group">
@@ -102,81 +32,7 @@
           </div>
         </div>
       </div>
-      <div class="column">
-        <div class="form-group">
-          <label>{{localize 'TYOA.scores.str.long'}} {{localize 'TYOA.Modifier'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.scores.str.tweak" id="str" value="{{system.scores.str.tweak}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.scores.dex.long'}} {{localize 'TYOA.Modifier'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.scores.dex.tweak" id="dex" value="{{system.scores.dex.tweak}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.scores.con.long'}} {{localize 'TYOA.Modifier'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.scores.con.tweak" id="con" value="{{system.scores.con.tweak}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.scores.int.long'}} {{localize 'TYOA.Modifier'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.scores.int.tweak" id="int" value="{{system.scores.int.tweak}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.scores.wis.long'}} {{localize 'TYOA.Modifier'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.scores.wis.tweak" id="wis" value="{{system.scores.wis.tweak}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.scores.cha.long'}} {{localize 'TYOA.Modifier'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.scores.cha.tweak" id="cha" value="{{system.scores.cha.tweak}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        {{/if}}
-        <div class="form-group">
-          <label>{{localize 'TYOA.saves.evasion'}} {{localize 'TYOA.category.saves'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.saves.evasion.mod" id="cha" value="{{system.saves.evasion.mod}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.saves.mental'}} {{localize 'TYOA.category.saves'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.saves.mental.mod" id="cha" value="{{system.saves.mental.mod}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.saves.physical'}} {{localize 'TYOA.category.saves'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.saves.physical.mod" id="cha" value="{{system.saves.physical.mod}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>{{localize 'TYOA.saves.luck'}} {{localize 'TYOA.category.saves'}}</label>
-          <div class="form-fields">
-            <input type="number" name="system.saves.luck.mod" id="cha" value="{{system.saves.luck.mod}}"
-              data-dtype="Number" />
-          </div>
-        </div>
-        
-      </div>
-    </div>
+      {{/if}}
     <footer class="sheet-footer">
       <button type="submit">
         <i class="fas fa-save"></i>{{localize "Save Changes"}}

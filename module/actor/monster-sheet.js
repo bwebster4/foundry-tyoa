@@ -39,7 +39,7 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
  _prepareItems(data) {
   // Partition items by category
   data.attackPatterns = [];
-  let [weapons, armors, items, arts, spells, abilities] = this.actor.items.reduce(
+  let [weapons, armors, items, techniques, abilities] = this.actor.items.reduce(
     (arr, item) => {
       // Grab attack groups
       if (["weapon"].includes(item.type)) {
@@ -50,43 +50,37 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
       if (item.type === "weapon") arr[0].push(item);
       else if (item.type === "armor") arr[1].push(item);
       else if (item.type === "item") arr[2].push(item);
-      else if (item.type === "art") arr[3].push(item);
-      else if (item.type === "spell") arr[4].push(item);
-      else if (item.type === "ability") arr [5].push(item);
+      else if (item.type === "technique") arr[3].push(item);
+      else if (item.type === "ability") arr [4].push(item);
       return arr;
     },
     [[], [], [], [], [], []]
   );
-  // Sort spells by level
-  var sortedSpells = {};
-  var slots = {};
-  for (var i = 0; i < spells.length; i++) {
-    let lvl = spells[i].system.lvl;
-    if (!sortedSpells[lvl]) sortedSpells[lvl] = [];
-    if (!slots[lvl]) slots[lvl] = 0;
-    slots[lvl] += spells[i].system.memorized;
-    sortedSpells[lvl].push(spells[i]);
+
+  // Sort techniques by skill
+  var unsortedTechniques = {};
+  var techSkills = [];
+  for (var i = 0; i < techniques.length; i++) {
+    const skill = techniques[i].system.skill;
+    if (!unsortedTechniques[skill]) {
+      unsortedTechniques[skill] = [];
+      techSkills.push(skill);
+    }
+    unsortedTechniques[skill].push(techniques[i]);
   }
 
-  // Sort each level
-  Object.keys(sortedSpells).forEach(level => {
-    let list = insertionSort(sortedSpells[level], "name");
-    list = insertionSort(list, "system.class");
-    sortedSpells[level] = list;
-  });
+  techSkills.sort();
+  var sortedTechniques = [];
+  for (var i = 0; i < techSkills.length; i++) {
+    const skill = techSkills[i];
+    var levelSorted = insertionSort(unsortedTechniques[skill], "system.lvl");
+    sortedTechniques.push(...levelSorted);
+  }
 
   data.attackPatterns.sort((a, b) => {
     const aName = a.name.toLowerCase(), bName = b.name.toLowerCase();
     return aName > bName ? 1 : bName > aName ? -1 : 0;
   });
-  
-  data.slots = {
-    used: slots,
-  };
-
-  // Sort arts by name and then by source
-  arts = insertionSort(arts, "name");
-  arts = insertionSort(arts, "system.source");
 
   // Assign and return
   data.owned = {
@@ -94,9 +88,8 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
     armors: insertionSort(armors, "name"),
     abilities: insertionSort(abilities, "name"),
     weapons: insertionSort(weapons, "name"),
-    arts: arts
+    techniques: sortedTechniques
   };
-  data.spells = sortedSpells;
 }
 
   /**
@@ -232,10 +225,16 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
       actorObject.rollAppearing({ event: event, check: check });
     });
 
-    html.find(".monster-skill-check a").click((ev) => {
+    html.find(".monster-hd-skill-check a").click((ev) => {
       let actorObject = this.actor;
       let check = $(ev.currentTarget).closest('.check-field').data('check');
-      actorObject.rollMonsterSkill({ event: event, check: check });
+      actorObject.rollHDMonsterSkill({ event: event, check: check });
+    });
+
+    html.find(".monster-wd-skill-check a").click((ev) => {
+      let actorObject = this.actor;
+      let check = $(ev.currentTarget).closest('.check-field').data('check');
+      actorObject.rollWDMonsterSkill({ event: event, check: check });
     });
 
     html.find(".item-prep").click(async (ev) => {
@@ -277,6 +276,11 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
     html.find(".hp-roll").click((ev) => {
       let actorObject = this.actor;
       actorObject.rollHP({ event: event });
+    });
+
+    html.find(".dp-roll").click((ev) => {
+      let actorObject = this.actor;
+      actorObject.rollDP({ event: event });
     });
 
     html.find(".item-pattern").click(ev => {

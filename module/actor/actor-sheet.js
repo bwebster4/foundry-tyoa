@@ -37,30 +37,30 @@ export class TyoaActorSheet extends ActorSheet {
     li.toggleClass("expanded");
   }
 
-  async _onSpellChange(event) {
-    event.preventDefault();
-    const itemId = event.currentTarget.closest(".item").dataset.itemId;
-    const item = this.actor.items.get(itemId);
-    if (event.target.dataset.field == "cast") {
-      return item.update({ "system.cast": parseInt(event.target.value) });
-    } else if (event.target.dataset.field == "memorize") {
-      return item.update({
-        "system.memorized": parseInt(event.target.value),
-      });
-    }
-  }
+  // async _onSpellChange(event) {
+  //   event.preventDefault();
+  //   const itemId = event.currentTarget.closest(".item").dataset.itemId;
+  //   const item = this.actor.items.get(itemId);
+  //   if (event.target.dataset.field == "cast") {
+  //     return item.update({ "system.cast": parseInt(event.target.value) });
+  //   } else if (event.target.dataset.field == "memorize") {
+  //     return item.update({
+  //       "system.memorized": parseInt(event.target.value),
+  //     });
+  //   }
+  // }
 
-  async _resetSpells(event) {
-    this.actor.update({
-      "system.spells.perDay.value": 0
-      }
-    );
-  }
+  // async _resetSpells(event) {
+  //   this.actor.update({
+  //     "system.spells.perDay.value": 0
+  //     }
+  //   );
+  // }
 
   async _resetEffort(event) {
-    const arts = this.actor.items.filter(item => item.type === "art");
-    await arts.forEach(art => {
-      const itemId = art.id;
+    const techniques = this.actor.items.filter(item => item.type === "technique");
+    await techniques.forEach(technique => {
+      const itemId = technique.id;
       const item = this.actor.items.get(itemId);
       item.update({ "system.effort": 0 });
     });
@@ -73,14 +73,14 @@ export class TyoaActorSheet extends ActorSheet {
     return item.update({ "system.effort": parseInt(event.target.value) });
   }
 
-  async _onArtSourceChange(event) {
-    event.preventDefault();
-    const itemId = event.currentTarget.closest(".item").dataset.itemId;
-    const item = this.actor.items.get(itemId);
-    return item.update({ "system.source": event.target.value });
-  }
+  // async _onTechniqueSkillChange(event) {
+  //   event.preventDefault();
+  //   const itemId = event.currentTarget.closest(".item").dataset.itemId;
+  //   const item = this.actor.items.get(itemId);
+  //   return item.update({ "system.skill": event.target.value });
+  // }
 
-  async _onArtTimeChange(event) {
+  async _onTechniqueTimeChange(event) {
     event.preventDefault();
     const itemId = event.currentTarget.closest(".item").dataset.itemId;
     const item = this.actor.items.get(itemId);
@@ -124,10 +124,8 @@ export class TyoaActorSheet extends ActorSheet {
           })
         }
         item.rollWeapon({ skipDialog: ev.ctrlKey });
-      } else if (item.type == "spell") {
-        item.spendSpell({ skipDialog: ev.ctrlKey });
-      } else if (item.type == "art") {
-        item.spendArt({ skipDialogue: ev.ctrlKey, itemId: itemId });
+      } else if (item.type == "technique") {
+        item.spendTechnique({ skipDialogue: ev.ctrlKey, itemId: itemId });
       }  else if (item.type == "skill"){
         item.rollSkill({ skipDialog: ev.ctrlKey });
       } else {
@@ -251,19 +249,19 @@ export class TyoaActorSheet extends ActorSheet {
     });
 
     html
-      .find(".artEffort input")
+      .find(".techniqueEffort input")
       .click((ev) => ev.target.select())
       .change(this._onEffortChange.bind(this));
 
-    html
-      .find(".artSource input")
-      .click((ev) => ev.target.select())
-      .change(this._onArtSourceChange.bind(this));
+    // html
+    //   .find(".techniqueSkill input")
+    //   .click((ev) => ev.target.select())
+    //   .change(this._onTechniqueSkillChange.bind(this));
 
     html
-      .find(".artTime input")
+      .find(".techniqueTime input")
       .click((ev) => ev.target.select())
-      .change(this._onArtTimeChange.bind(this));
+      .change(this._onTechniqueTimeChange.bind(this));
     
     html.find(".check-field .check.hd-roll").click((ev) => {
       let actorObject = this.actor;
@@ -278,15 +276,15 @@ export class TyoaActorSheet extends ActorSheet {
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
 
-    html
-      .find(".memorize input")
-      .click((ev) => ev.target.select())
-      .change(this._onSpellChange.bind(this));
+    // html
+    //   .find(".memorize input")
+    //   .click((ev) => ev.target.select())
+    //   .change(this._onSpellChange.bind(this));
 
 
-    html.find(".slot-reset").click((ev) => {
-      this._resetSpells(ev);
-    });
+    // html.find(".slot-reset").click((ev) => {
+    //   this._resetSpells(ev);
+    // });
 
     html.find(".effort-reset").click((ev) => {
       this._resetEffort(ev);

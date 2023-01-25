@@ -7,13 +7,12 @@ export class TyoaItem extends Item {
   // Replacing default image
   static get defaultIcons() {
     return {
-      spell: "/systems/tyoa/assets/default/spell.png",
       ability: "/systems/tyoa/assets/default/ability.png",
       armor: "/systems/tyoa/assets/default/armor.png",
       weapon: "/systems/tyoa/assets/default/weapon.png",
       item: "/systems/tyoa/assets/default/item.png",
       focus: "/systems/tyoa/assets/default/focus.png",
-      art: "/systems/tyoa/assets/default/art.png",
+      technique: "/systems/tyoa/assets/default/art.png",
     };
   }
 
@@ -56,13 +55,13 @@ export class TyoaItem extends Item {
     if (this.type == "weapon") {
       itemData.tags.forEach((t) => props.push(t.value));
     }
-    if (this.type == "spell") {
-      props.push(
-        `${itemData.class} ${itemData.lvl}`,
-        itemData.range,
-        itemData.duration
-      );
-    }
+    // if (this.type == "spell") {
+    //   props.push(
+    //     `${itemData.class} ${itemData.lvl}`,
+    //     itemData.range,
+    //     itemData.duration
+    //   );
+    // }
     if (itemData.hasOwnProperty("equipped")) {
       props.push(itemData.equipped ? "Equipped" : "Not Equipped");
     }
@@ -263,34 +262,25 @@ export class TyoaItem extends Item {
     });
   }
 
-  spendSpell() {
-    const spellsLeft = this.actor.system.spells.perDay.value;
-    const spellsMax = this.actor.system.spells.perDay.max;
-    if (spellsLeft + 1 > spellsMax)
-      return ui.notifications.warn("No spell slots remaining!");
-    this.actor
-      .update({
-        "system.spells.perDay.value": spellsLeft + 1,
-      })
-      .then(() => {
-        this.show({ skipDialog: true });
-      });
-  }
+  // spendSpell() {
+  //   const spellsLeft = this.actor.system.spells.perDay.value;
+  //   const spellsMax = this.actor.system.spells.perDay.max;
+  //   if (spellsLeft + 1 > spellsMax)
+  //     return ui.notifications.warn("No spell slots remaining!");
+  //   this.actor
+  //     .update({
+  //       "system.spells.perDay.value": spellsLeft + 1,
+  //     })
+  //     .then(() => {
+  //       this.show({ skipDialog: true });
+  //     });
+  // }
 
-  spendArt() {
-    if (this.system.time) {
-      const sourceName = Object.keys(this.actor.system.classes).find(
-        (source) =>
-          this.actor.system.classes[source].name === this.system.source
-      );
-      if (sourceName === undefined)
-        return ui.notifications.warn(
-          `Please add ${this.system.source} as a caster class in the Tweaks menu.`
-        );
-
+  spendTechnique() {
+    if (this.system.magic) {
       const currEffort = this.system.effort;
-      const sourceVal = this.actor.system.classes[sourceName].value;
-      const sourceMax = this.actor.system.classes[sourceName].max;
+      const sourceVal = this.actor.system.effort.value;
+      const sourceMax = this.actor.system.effort.max;
 
       if (sourceVal + 1 > sourceMax)
         return ui.notifications.warn("No Effort remaining!");
@@ -336,15 +326,15 @@ export class TyoaItem extends Item {
         return "";
       case "ability":
         return "";
-      case "spell":
-        let sTags = `${formatTag(data.class)}${formatTag(
-          data.range
-        )}${formatTag(data.duration)}${formatTag(data.roll)}`;
-        if (data.save) {
-          sTags += formatTag(CONFIG.TYOA.saves[data.save], "fa-skull");
-        }
-        return sTags;
-      case "art":
+      // case "spell":
+      //   let sTags = `${formatTag(data.class)}${formatTag(
+      //     data.range
+      //   )}${formatTag(data.duration)}${formatTag(data.roll)}`;
+      //   if (data.save) {
+      //     sTags += formatTag(CONFIG.TYOA.saves[data.save], "fa-skull");
+      //   }
+      //   return sTags;
+      case "technique":
         let roll = "";
         roll += data.roll ? data.roll : "";
         roll += data.rollTarget ? CONFIG.TYOA.roll_type[data.rollType] : "";
@@ -411,11 +401,11 @@ export class TyoaItem extends Item {
       case "weapon":
         this.rollWeapon();
         break;
-      case "spell":
-        this.spendSpell();
-        break;
-      case "art":
-        this.spendArt();
+      // case "spell":
+      //   this.spendSpell();
+      //   break;
+      case "technique":
+        this.spendTechnique();
         break;
       case "item":
       case "armor":

@@ -4,13 +4,12 @@ import { TyoaAsset } from "./asset.js";
 //Provide a type string to class object mapping to keep our code clean
 const itemMappings = {
   asset: TyoaAsset,
-  spell: TyoaItem,
   ability: TyoaItem,
   armor: TyoaItem,
   weapon: TyoaItem,
   item: TyoaItem,
   focus: TyoaItem,
-  art: TyoaItem,
+  technique: TyoaItem,
   skill: TyoaItem,
 };
 

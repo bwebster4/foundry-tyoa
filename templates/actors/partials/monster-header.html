@@ -12,14 +12,14 @@
     </li>
     <li class="flexrow check-field">
       <div>
-        <input type="number" name="system.initiative.mod" value="{{system.initiative.mod}}" />
-        <label>{{localize 'TYOA.Initiative'}}</label>
+        <input type="text" name="system.dp.wd" value="{{system.dp.wd}}" />
+        <label>{{localize 'TYOA.WillDiceLong'}}</label>
       </div>
     </li>
     <li class="flexrow check-field">
       <div>
-        <input type="number" name="system.thac0.bba" value="{{system.thac0.bba}}" />
-        <label title="{{localize 'TYOA.AB'}}">{{localize 'TYOA.ABShort'}}</label>
+        <input type="number" name="system.initiative.mod" value="{{system.initiative.mod}}" />
+        <label>{{localize 'TYOA.Initiative'}}</label>
       </div>
     </li>
     <li class="flexrow check-field">
@@ -39,23 +39,6 @@
         (<div><input type="text" name="system.details.appearing.w" value="{{system.details.appearing.w}}" />
           <label>{{localize 'TYOA.details.appearingB'}}</label></div>)
       <div class="check appearing-check" title="{{localize 'TYOA.details.wildernessAppearing'}}"><a><i class="fas fa-dice"></i></a></div>
-    </li>
-    <li>
-      <input type="number" name="system.details.xp" value="{{system.details.xp}}" />
-      <label>{{localize 'TYOA.details.experience.award'}}</label>
-    </li>
-  </ul>
-  <ul class="summary flexrow">
-    <li class="flexrow check-field">
-      <div>
-        <input type="text" name="system.details.alignment" value="{{system.details.alignment}}" />
-        <label>{{localize 'TYOA.details.alignment'}}</label>
-      </div>
-      <div class="check reaction-check" title="{{localize 'TYOA.roll.reaction'}}"><a><i class="fas fa-dice"></i></a></div>
-    </li>
-    <li class="treasure-table" title="{{localize 'TYOA.details.instinctTableHint'}}">
-      <div>{{{system.details.instinctTable.link}}}</div>
-      <label>{{localize 'TYOA.details.instinct'}}</label>
     </li>
   </ul>
 </section>

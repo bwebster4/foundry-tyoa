@@ -18,7 +18,6 @@ export class TyoaActor extends Actor {
     this.computeEffort();
     this.computeTotalSP();
     this.setXP();
-    this.computePrepared();
     this.computeInit();
   }
 
@@ -83,6 +82,18 @@ export class TyoaActor extends Actor {
     return this.update({
       data: {
         hp: {
+          max: roll.total,
+          value: roll.total,
+        },
+      },
+    });
+  }
+
+  rollDP(options = {}) {
+    const roll = new Roll(this.system.dp.wd).roll({ async: false });
+    return this.update({
+      data: {
+        dp: {
           max: roll.total,
           value: roll.total,
         },
@@ -325,15 +336,15 @@ export class TyoaActor extends Actor {
     });
   }
 
-  rollMonsterSkill(options = {}) {
-    const label = game.i18n.localize(`TYOA.skill`);
+  rollHDMonsterSkill(options = {}) {
+    const label = game.i18n.localize(`TYOA.hdSkills`);
     const rollParts = ["2d6"];
 
     const data = {
       actor: this.system,
       roll: {
         type: "skill",
-        target: this.system.details.skill,
+        target: this.system.details.hdSkills,
       },
 
       details: game.i18n.format("TYOA.roll.details.attribute", {
@@ -341,7 +352,38 @@ export class TyoaActor extends Actor {
       }),
     };
 
-    rollParts.push(this.system.details.skill);
+    rollParts.push(this.system.details.hdSkills);
+    let skip = options.event && options.event.ctrlKey;
+
+    // Roll and return
+    return TyoaDice.Roll({
+      event: options.event,
+      parts: rollParts,
+      data: data,
+      skipDialog: skip,
+      speaker: ChatMessage.getSpeaker({ actor: this }),
+      flavor: game.i18n.format("TYOA.roll.attribute", { attribute: label }),
+      title: game.i18n.format("TYOA.roll.attribute", { attribute: label }),
+    });
+  }
+
+  rollWDMonsterSkill(options = {}) {
+    const label = game.i18n.localize(`TYOA.wdSkills`);
+    const rollParts = ["2d6"];
+
+    const data = {
+      actor: this.system,
+      roll: {
+        type: "skill",
+        target: this.system.details.wdSkills,
+      },
+
+      details: game.i18n.format("TYOA.roll.details.attribute", {
+        score: label,
+      }),
+    };
+
+    rollParts.push(this.system.details.wdSkills);
     let skip = options.event && options.event.ctrlKey;
 
     // Roll and return
@@ -419,7 +461,7 @@ export class TyoaActor extends Actor {
         (item) =>
           item.type === "skill" && item.name.toLowerCase() === skillAttack
       )
-      if(skill) skillValue = skill.system.ownedLevel;
+      if (skill) skillValue = skill.system.ownedLevel;
       else skillValue = -1;
     }
 
@@ -457,8 +499,6 @@ export class TyoaActor extends Actor {
         Number(this.system.damageBonus) +
         Number(attData.item.system.shock.damage);
     }
-    rollParts.push(data.thac0.bba.toString());
-    rollLabels.push(`+${data.thac0.bba} (attack bonus)`);
 
     // TODO: Add range selector in dialogue if missile attack.
     /* if (options.type == "missile") {
@@ -481,25 +521,26 @@ export class TyoaActor extends Actor {
       }
     }
 
-    if (attData.item && attData.item.system.bonus) {
-      rollParts.push(attData.item.system.bonus);
-      rollLabels.push(`+${attData.item.system.bonus} (weapon bonus)`);
+    if (attData.item && attData.item.system.characterBonus) {
+      rollParts.push(attData.item.system.characterBonus);
+      rollLabels.push(`+${attData.item.system.characterBonus} (character bonus)`);
     }
-    let thac0 = data.thac0.value;
+
+    if (attData.item && attData.item.system.weaponBonus) {
+      rollParts.push(attData.item.system.weaponBonus);
+      rollLabels.push(`+${attData.item.system.weaponBonus} (weapon bonus)`);
+    }
 
     if (data.character) {
-      if (data.warrior) {
-        const levelRoundedUp = Math.ceil(data.details.level / 2);
-        dmgParts.push(levelRoundedUp);
-        dmgLabels.push(`+${levelRoundedUp} (warrior bonus)`);
-      }
       if (attData.item.system.skillDamage) {
         dmgParts.push(skillValue);
         dmgLabels.push(`+${skillValue} (${skillAttack})`);
       }
     } else {
-      dmgParts.push(this.system.damageBonus);
-      dmgLabels.push(`+${this.system.damageBonus.toString()} (damage bonus)`);
+      if(this.system.damageBonus){
+        dmgParts.push(this.system.damageBonus);
+        dmgLabels.push(`+${this.system.damageBonus.toString()} (damage bonus)`);
+      }
     }
 
     const rollTitle = `1d20 ${rollLabels.join(" ")}`;
@@ -510,7 +551,6 @@ export class TyoaActor extends Actor {
       item: attData.item,
       roll: {
         type: options.type,
-        thac0: thac0,
         dmg: dmgParts,
         save: attData.roll.save,
         target: attData.roll.target,
@@ -558,7 +598,10 @@ export class TyoaActor extends Actor {
     let initValue = 0;
     if (game.settings.get("tyoa", "initiative") != "group") {
       if (this.type == "character") {
-        initValue = this.system.scores.dex.mod + this.system.initiative.mod;
+        let observation = this.system.items.find((i) => i.name == "Observation");
+        let obsLevel = -1;
+        if (observation) obsLevel = observation.level;
+        initValue = this.system.initiative.mod + obsLevel;
       } else {
         initValue = this.system.initiative.mod;
       }
@@ -586,27 +629,6 @@ export class TyoaActor extends Actor {
         xpRate = game.settings.get("tyoa", "xpCustomList").split(",");
         break;
     }
-
-    // Set character's XP to level
-    this.system.details.xp.next = xpRate[level];
-  }
-
-  computePrepared() {
-    if (!this.system.spells.enabled) {
-      return;
-    }
-
-    // Initialize data and variables
-    const data = this.system;
-    const spells = this.items.filter((s) => s.type == "spell");
-    let spellsPrepared = 0;
-
-    spells.forEach((s) => {
-      if (s.system.prepared) {
-        spellsPrepared++;
-      }
-    });
-    this.system.spells.prepared.value = spellsPrepared;
   }
 
   computeEncumbrance() {
@@ -618,7 +640,7 @@ export class TyoaActor extends Actor {
     let totalStowed = 0;
     let athleticsSkill = this.items.find((s) => s.name == "Athletics");
     let athletics = -1;
-    if(athleticsSkill) athletics = athleticsSkill.ownedLevel;
+    if (athleticsSkill) athletics = athleticsSkill.system.ownedLevel;
     let maxReadied = 5 + athletics;
     let maxStowed = maxReadied * 2;
     const weapons = this.items.filter((w) => w.type == "weapon");
@@ -703,45 +725,41 @@ export class TyoaActor extends Actor {
 
     const data = this.system;
 
-    if (data.config.movementAuto) {
-      this.system.movement.bonus = 0;
+    let newBase = data.movement.base;
+    const readiedValue = data.encumbrance.readied.value;
+    const readiedMax = data.encumbrance.readied.max;
+    const stowedValue = data.encumbrance.stowed.value;
+    const stowedMax = data.encumbrance.stowed.max;
+    const bonus = data.movement.bonus;
 
-      let newBase = data.movement.base;
-      const readiedValue = data.encumbrance.readied.value;
-      const readiedMax = data.encumbrance.readied.max;
-      const stowedValue = data.encumbrance.stowed.value;
-      const stowedMax = data.encumbrance.stowed.max;
-      const bonus = data.movement.bonus;
+    let systemBase = [];
+    game.settings.get("tyoa", "movementRate") == "movebx"
+      ? (systemBase = [40, 30, 20])
+      : (systemBase = [30, 20, 15]);
 
-      let systemBase = [];
-      game.settings.get("tyoa", "movementRate") == "movebx"
-        ? (systemBase = [40, 30, 20])
-        : (systemBase = [30, 20, 15]);
-
-      if (readiedValue <= readiedMax && stowedValue <= stowedMax) {
-        newBase = systemBase[0] + bonus;
-      } else if (readiedValue <= readiedMax + 2 && stowedValue <= stowedMax) {
-        newBase = systemBase[1] + bonus;
-      } else if (readiedValue <= readiedMax && stowedValue <= stowedMax + 4) {
-        newBase = systemBase[1] + bonus;
-      } else if (
-        readiedValue <= readiedMax + 2 &&
-        stowedValue <= stowedMax + 4
-      ) {
-        newBase = systemBase[2] + bonus;
-      } else if (readiedValue <= readiedMax + 4 && stowedValue <= stowedMax) {
-        newBase = systemBase[2] + bonus;
-      } else if (readiedValue <= readiedMax && stowedValue <= stowedMax + 8) {
-        newBase = systemBase[2] + bonus;
-      } else {
-        newBase = 0;
-      }
-      this.system.movement = {
-        base: newBase,
-        exploration: newBase * 3,
-        overland: newBase / 5,
-      };
+    if (readiedValue <= readiedMax && stowedValue <= stowedMax) {
+      newBase = systemBase[0] + bonus;
+    } else if (readiedValue <= readiedMax + 2 && stowedValue <= stowedMax) {
+      newBase = systemBase[1] + bonus;
+    } else if (readiedValue <= readiedMax && stowedValue <= stowedMax + 4) {
+      newBase = systemBase[1] + bonus;
+    } else if (
+      readiedValue <= readiedMax + 2 &&
+      stowedValue <= stowedMax + 4
+    ) {
+      newBase = systemBase[2] + bonus;
+    } else if (readiedValue <= readiedMax + 4 && stowedValue <= stowedMax) {
+      newBase = systemBase[2] + bonus;
+    } else if (readiedValue <= readiedMax && stowedValue <= stowedMax + 8) {
+      newBase = systemBase[2] + bonus;
+    } else {
+      newBase = 0;
     }
+    this.system.movement = {
+      base: newBase,
+      exploration: newBase * 3,
+      overland: newBase / 5,
+    };
   }
 
   // Calculate Resources
@@ -792,37 +810,12 @@ export class TyoaActor extends Actor {
   computeEffort() {
     if (this.type === "faction") return;
 
-    const data = this.system;
-    if (data.spells.enabled != true) {
-      return;
-    }
-    let effortOne = 0;
-    let effortTwo = 0;
-    let effortThree = 0;
-    let effortFour = 0;
-    let effortType1 = data.classes.effort1.name;
-    let effortType2 = data.classes.effort2.name;
-    let effortType3 = data.classes.effort3.name;
-    let effortType4 = data.classes.effort4.name;
-    const arts = this.items.filter((a) => a.type == "art");
-    arts.forEach((a) => {
-      if (effortType1 == a.system.source) {
-        effortOne += a.system.effort;
-      }
-      if (effortType2 == a.system.source) {
-        effortTwo += a.system.effort;
-      }
-      if (effortType3 == a.system.source) {
-        effortThree += a.system.effort;
-      }
-      if (effortType4 == a.system.source) {
-        effortFour += a.system.effort;
-      }
+    let effort = 0;
+    const techniques = this.items.filter((a) => a.type == "technique");
+    techniques.forEach((t) => {
+      effort += t.system.effort;
     });
-    this.system.classes.effort1.value = effortOne;
-    this.system.classes.effort2.value = effortTwo;
-    this.system.classes.effort3.value = effortThree;
-    this.system.classes.effort4.value = effortFour;
+    this.system.effort.value = effort;
   }
 
   computeTreasure() {
@@ -849,10 +842,11 @@ export class TyoaActor extends Actor {
     const data = this.system;
 
     // Compute AC
+    let shield = 0;
+    let shieldBonus = 0;
     let baseAac = 10;
-    let AacShieldMod = 0;
-    let AacShieldNaked = 0;
-    let naked = baseAac + data.aac.mod;
+    let melee = data.aacm.mod;
+    let ranged = data.aacr.mod;
     let exertPenalty = 0;
     let sneakPenalty = 0;
 
@@ -874,25 +868,27 @@ export class TyoaActor extends Actor {
           exertPenalty = a.system.weight;
         }
       } else if (a.system.type == "shield") {
-        AacShieldMod = 1 + a.system.aac.mod;
-        AacShieldNaked = a.system.aac.value + a.system.aac.mod;
+        shield = a.system.aac.value;
+        shieldBonus = a.system.aac.mod;
       }
     });
-    if (AacShieldMod > 0) {
-      let shieldOnly = AacShieldNaked + data.aac.mod;
-      let shieldBonus =
-        baseAac + data.aac.mod + AacShieldMod;
-      if (shieldOnly > shieldBonus) {
-        this.system.aac = { value: shieldOnly, shield: 0, naked };
+    if (shield > 0) {
+      let shieldOnly = shield;
+      let shieldAndArmor = baseAac + shieldBonus;
+      if (shieldOnly > shieldAndArmor) {
+        this.system.aacm = { value: shieldOnly + melee };
+        this.system.aacr = { value: shieldOnly + ranged };
       } else {
-        this.system.aac = { value: shieldBonus, shield: AacShieldMod, naked };
+        this.system.aacm = { value: shieldAndArmor + melee };
+        this.system.aacr = { value: shieldAndArmor + ranged };
       }
     } else {
-      this.system.aac = {
-        value: baseAac + data.aac.mod,
-        naked,
-        shield: 0,
+      this.system.aacm = {
+        value: baseAac + melee
       };
+      this.system.aacr = {
+        value: baseAac + ranged
+      }
     }
     this.system.skills.sneakPenalty = sneakPenalty;
     this.system.skills.exertPenalty = exertPenalty;
@@ -942,8 +938,7 @@ export class TyoaActor extends Actor {
         data: {
           ownedLevel: -1,
           description: game.i18n.localize(skillDesc),
-          skillDice: "2d6",
-          secondary: false,
+          skillDice: "2d6"
         },
         img: imagePath,
       };
@@ -964,7 +959,6 @@ export class TyoaActor extends Actor {
         let skillPack = game.packs.get("tyoa.skills");
         let toAdd = await skillPack.getDocuments();
         let primarySkills = toAdd
-          .filter((i) => i.system.secondary == false)
           .map((item) => item.toObject());
         await this.createEmbeddedDocuments("Item", primarySkills);
       }

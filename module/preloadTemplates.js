@@ -8,7 +8,7 @@ export const preloadHandlebarsTemplates = async function () {
         //Sheet tabs
         'systems/tyoa/templates/actors/partials/character-header.html',
         'systems/tyoa/templates/actors/partials/character-attributes-tab.html',
-        'systems/tyoa/templates/actors/partials/character-spells-tab.html',
+        'systems/tyoa/templates/actors/partials/character-techniques-tab.html',
         'systems/tyoa/templates/actors/partials/character-inventory-tab.html',
         'systems/tyoa/templates/actors/partials/character-notes-tab.html',
 

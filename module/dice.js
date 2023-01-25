@@ -147,7 +147,6 @@ export class TyoaDice {
       target: "",
       total: roll.total,
     };
-    result.target = data.roll.thac0;
     const targetAac = data.roll.target
       ? data.roll.target.actor.system.aac.value
       : 0;
@@ -155,10 +154,7 @@ export class TyoaDice {
 
     if (roll.total < targetAac) {
       result.details = game.i18n.format(
-        "TYOA.messages.AttackAscendingFailure",
-        {
-          bonus: result.target,
-        }
+        "TYOA.messages.AttackAscendingFailure"
       );
       return result;
       }

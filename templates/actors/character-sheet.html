@@ -9,11 +9,9 @@
     <a class="item" data-tab="attributes">
       {{localize "TYOA.category.attributes"}}
     </a>
-    {{#if system.spells.enabled}}
-    <a class="item" data-tab="spells">
-      {{localize "TYOA.category.spells"}}
+    <a class="item" data-tab="techniques">
+      {{localize "TYOA.category.techniques"}}
     </a>
-    {{/if}}
     <a class="item" data-tab="inventory">
       {{localize "TYOA.category.inventory"}}
     </a>
@@ -27,11 +25,9 @@
     <div class="tab" data-group="primary" data-tab="attributes">
       {{> "systems/tyoa/templates/actors/partials/character-attributes-tab.html"}}
     </div>
-    {{#if system.spells.enabled}}
-    <div class="tab" data-group="primary" data-tab="spells">
-      {{> "systems/tyoa/templates/actors/partials/character-spells-tab.html"}}
+    <div class="tab" data-group="primary" data-tab="techniques">
+      {{> "systems/tyoa/templates/actors/partials/character-techniques-tab.html"}}
     </div>
-    {{/if}}
     <div class="tab" data-group="primary" data-tab="inventory">
       {{> "systems/tyoa/templates/actors/partials/character-inventory-tab.html"}}
     </div>

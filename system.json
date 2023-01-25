@@ -22,6 +22,14 @@
   "esmodules": ["tyoa.js"],
   "styles": ["tyoa.css"],
   "packs": [
+    {
+      "name": "skills",
+      "label": "Skills",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/skills.db",
+      "type": "Item"
+    }
   ],
   "languages": [
     {

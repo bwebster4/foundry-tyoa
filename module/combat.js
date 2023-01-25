@@ -5,7 +5,6 @@ export class TyoaCombat {
     data.combatants = [];
     let groups = {};
     let groupMods = {};
-    let alertGroups = {};
 
     combat.combatants.forEach((cbt) => {
       const group = cbt.getFlag("tyoa", "group");
@@ -15,13 +14,21 @@ export class TyoaCombat {
       // if (alert.length > 0) {
       //   alertGroups[group] = true;
       // }
-      let observance  = cbt.actor.items.find((i) => i.name == "Observance")
-      if (observance) {
-        let level = observance.ownedLevel;
+      let initMod = cbt.actor.system.initiative.mod;
+
+      let observation  = cbt.actor.items.find((i) => i.name == "Observation");
+      if (observation) {
+        let level = observation.system.ownedLevel + initMod;
         if (groupMods[group]) {
           groupMods[group] = Math.max(level, groupMods[group]);
         } else {
           groupMods[group] = level;
+        }
+      } else {
+        if (groupMods[group]) {
+          groupMods[group] = Math.max(initMod - 1, groupMods[group]);
+        } else {
+          groupMods[group] = initMod - 1;
         }
       }
     });
@@ -29,10 +36,7 @@ export class TyoaCombat {
     // Roll init
     Object.keys(groups).forEach((group) => {
       let rollParts = [];
-      rollParts.push("1d8");
-      if (alertGroups[group]) {
-        rollParts.push(1);
-      }
+      rollParts.push("2d6");
       if (groupMods[group]) {
         rollParts.push(groupMods[group]);
       }
@@ -84,12 +88,12 @@ export class TyoaCombat {
       // Check if initiative has already been manually rolled
       if (!c.initiative) {
         // Roll initiative
-        roll = new Roll("1d8+" + c.actor.system.initiative.value).roll({ async: false });
+        roll = new Roll("2d6+" + c.actor.system.initiative.value).roll({ async: false });
         roll.toMessage({
           flavor: game.i18n.format('TYOA.roll.individualInit', { name: c.token.name })
         });
         if (alert.length > 0) {
-          roll2 = new Roll("1d8+" + c.actor.system.initiative.value).roll({ async: false });
+          roll2 = new Roll("2d6+" + c.actor.system.initiative.value).roll({ async: false });
           roll2.toMessage({
             flavor: game.i18n.format('TYOA.roll.individualInit', { name: c.token.name })
           });

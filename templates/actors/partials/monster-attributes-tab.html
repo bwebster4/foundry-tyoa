@@ -15,20 +15,25 @@
                             placeholder="0" />
                     </div>
                 </li>
-                <li class="attribute morale-check">
-                    <h4 class="attribute-name box-title"><a>{{ localize "TYOA.details.morale" }}</a>
+                <li class="attribute health">
+                    <h4 class="attribute-name box-title" title="{{localize 'TYOA.DP'}}">{{ localize "TYOA.DPShort"
+                        }}
+                        <a class="hp-roll"><i class="fas fa-dice"></i></a>
                     </h4>
-                    <div class="attribute-value">
-                        <input name="system.details.morale" type="number" value="{{system.details.morale}}" placeholder="0"
-                            data-dtype="Number" />
+                    <div class="attribute-value flexrow">
+                        <input name="system.dp.value" type="number" value="{{system.dp.value}}" data-dtype="Number"
+                            placeholder="0" />
+                        <span class="sep"> / </span>
+                        <input name="system.dp.max" type="text" value="{{system.dp.max}}" data-dtype="Number"
+                            placeholder="0" />
                     </div>
                 </li>
-                <li class="attribute instinct-check">
-                    <h4 class="attribute-name box-title"><a>{{ localize "TYOA.details.instinct" }}</a>
+                <li class="attribute monster-hd-skill-check">
+                    <h4 class="attribute-name box-title"><a>{{ localize "TYOA.hdSkills" }}</a>
                     </h4>
                     <div class="attribute-value">
-                        <input name="system.details.instinct" type="number" value="{{system.details.instinct}}"
-                            placeholder="0" data-dtype="Number" />
+                        <input name="system.details.hdSkills" type="number" value="{{system.details.hdSkills}}" placeholder="0"
+                            data-dtype="Number" />
                     </div>
                 </li>
             </ul>
@@ -36,16 +41,19 @@
                 <li class="attribute">
                     <h4 class="attribute-name box-title" title="{{ localize 'TYOA.ArmorClass' }}">
                         {{ localize "TYOA.ArmorClassShort" }}</h4>
-                    <div class="attribute-value">
-                        <input name="system.aac.value" type="number" value="{{system.aac.value}}" data-dtype="Number"
-                            placeholder="10" data-dtype="Number" />
+                    <div class="attribute-value flexrow">
+                        <input name="system.aacm.value" type="number" value="{{system.aacm.value}}" data-dtype="Number"
+                            placeholder="0" />
+                        <span class="sep"> / </span>
+                        <input name="system.aacr.value" type="text" value="{{system.aacr.value}}" data-dtype="Number"
+                            placeholder="10" />
                     </div>
                 </li>
-                <li class="attribute monster-skill-check">
-                    <h4 class="attribute-name box-title"><a>{{ localize "TYOA.skill" }}</a>
+                <li class="attribute monster-wd-skill-check">
+                    <h4 class="attribute-name box-title"><a>{{ localize "TYOA.wdSkills" }}</a>
                     </h4>
                     <div class="attribute-value">
-                        <input name="system.details.skill" type="number" value="{{system.details.skill}}" placeholder="0"
+                        <input name="system.details.wdSkills" type="number" value="{{system.details.wdSkills}}" placeholder="0"
                             data-dtype="Number" />
                     </div>
                 </li>
@@ -57,44 +65,6 @@
                         <input name="system.movement.base" type="text" value="{{system.movement.base}}" placeholder="0"
                             data-dtype="text" />
                     </div>
-                </li>
-            </ul>
-        </div>
-        <div class="flexrow">
-            <ul class="attributes saves">
-                <li class="attribute saving-throw" data-save="evasion">
-                    <h4 class="attribute-name box-title">
-                        <a>{{ localize "TYOA.saves.evasion" }}</a>
-                    </h4>
-                    <div class="attribute-value">
-                        <input name="system.saves.evasion.value" type="number" value="{{system.saves.evasion.value}}"
-                            data-dtype="Number" disabled />
-                </li>
-                <li class="attribute saving-throw" data-save="mental">
-                    <h4 class="attribute-name box-title">
-                        <a>{{ localize "TYOA.saves.mental" }}</a>
-                    </h4>
-                    <div class="attribute-value">
-                        <input name="system.saves.mental.value" type="number" value="{{system.saves.mental.value}}"
-                            data-dtype="Number" disabled />
-                </li>
-            </ul>
-            <ul class="attributes saves">
-                <li class="attribute saving-throw" data-save="physical">
-                    <h4 class="attribute-name box-title">
-                        <a>{{ localize "TYOA.saves.physical" }}</a>
-                    </h4>
-                    <div class="attribute-value">
-                        <input name="system.saves.physical.value" type="number" value="{{system.saves.physical.value}}"
-                            data-dtype="Number" disabled />
-                </li>
-                <li class="attribute saving-throw" data-save="luck">
-                    <h4 class="attribute-name box-title">
-                        <a>{{ localize "TYOA.saves.luck" }}</a>
-                    </h4>
-                    <div class="attribute-value">
-                        <input name="system.saves.luck.value" type="number" value="{{system.saves.luck.value}}"
-                            placeholder="0" data-dtype="Number" disabled />
                 </li>
             </ul>
         </div>

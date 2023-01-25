@@ -75,22 +75,15 @@
             </div>
           </div>
           <div class="form-group">
-            <label title={{localize 'TYOA.spells.Save' }}>{{localize 'TYOA.spells.Save'}}</label>
+            <label>{{localize 'TYOA.items.CharacterBonus'}}</label>
             <div class="form-fields">
-              <select name="system.save">
-                {{#select system.save}}
-                <option value=""></option>
-                {{#each config.saves as |save a|}}
-                <option value="{{a}}">{{save}}</option>
-                {{/each}}
-                {{/select}}
-              </select>
+              <input type="number" name="system.characterBonus" value="{{system.characterBonus}}" data-dtype="Number" />
             </div>
           </div>
           <div class="form-group">
-            <label>{{localize 'TYOA.items.AtkBonus'}}</label>
+            <label>{{localize 'TYOA.items.WeaponBonus'}}</label>
             <div class="form-fields">
-              <input type="number" name="system.bonus" value="{{system.bonus}}" data-dtype="Number" />
+              <input type="number" name="system.weaponBonus" value="{{system.weaponBonus}}" data-dtype="Number" />
             </div>
           </div>
           {{#if system.missile}}

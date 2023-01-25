@@ -16,41 +16,65 @@
         </div>
       </li>
       <li class="attribute ability-score">
+        <h4 class="attribute-name box-title" title="{{ localize 'TYOA.DPLong' }}">
+          {{ localize "TYOA.DPShort" }}
+        </h4>
+        <div class="attribute-value">
+          <input name="system.dp.value" type="number" value="{{system.dp.value}}" data-dtype="Number" placeholder=0
+            title="{{ localize 'TYOA.DP' }}" />
+        </div>
+        <div class="attribute-value attribute-mod">
+          <input name="system.dp.max" type="number" value="{{system.dp.max}}" data-dtype="Number" placeholder=0
+            title="{{ localize 'TYOA.DPMax' }}" />
+        </div>
+      </li>
+      <li class="attribute ability-score">
         <h4 class="attribute-name box-title" title="{{ localize 'TYOA.ArmorClass' }}">
           {{ localize "TYOA.ArmorClassShort" }}
         </h4>
         <div class="attribute-value">
-          <input name="system.aac.value" type="number" value="{{system.aac.value}}" data-dtype="Number" placeholder=0
-            title="{{ localize 'TYOA.ArmorClass' }}" disabled />
+          <input name="system.aacm.value" type="number" value="{{system.aacm.value}}" data-dtype="Number" placeholder=0
+            title="{{ localize 'TYOA.ArmorClassMelee' }}" disabled />
         </div>
         <div class="attribute-value attribute-mod">
-          <input name="system.aac.naked" type="number" value="{{system.aac.naked}}" data-dtype="Number" placeholder=0
-            title="{{ localize 'TYOA.ArmorClassNaked' }}" disabled />
+          <input name="system.aacr.value" type="number" value="{{system.aacr.value}}" data-dtype="Number" placeholder=0
+            title="{{ localize 'TYOA.ArmorClassRanged' }}" disabled />
         </div>
       </li>
       <li class="attribute ability-score">
-        <h4 class="attribute-name box-title" title="{{ localize 'TYOA.SystemStrainLong' }}">
-          {{ localize "TYOA.SystemStrainShort" }}
+        <h4 class="attribute-name box-title" title="{{ localize 'TYOA.StressLong' }}">
+          {{ localize "TYOA.StressShort" }}
         </h4>
         <div class="attribute-value">
           <input name="system.details.strain.value" type="number" value="{{system.details.strain.value}}"
-            data-dtype="Number" placeholder=0 title="{{ localize 'TYOA.SystemStrain' }}" />
+            data-dtype="Number" placeholder=0 title="{{ localize 'TYOA.Stress' }}" />
         </div>
         <div class="attribute-value attribute-mod">
           <input name="system.details.strain.max" type="number" value="{{system.details.strain.max}}" data-dtype="Number"
-            placeholder=0 title="{{ localize 'TYOA.SystemStrainMax' }}" />
+            placeholder=0 title="{{ localize 'TYOA.StressMax' }}" />
         </div>
       </li>
-      <li class="attribute ability-score" data-stat="mov">
+      <li class="attribute ability-score">
+        <h4 class="attribute-name box-title" title="{{ localize 'TYOA.InjuriesLong' }}">
+          {{ localize "TYOA.InjuriesShort" }}
+        </h4>
+        <div class="attribute-value">
+          <input name="system.details.injuries.value" type="number" value="{{system.details.injuries.value}}"
+            data-dtype="Number" placeholder=0 title="{{ localize 'TYOA.Injuries' }}" />
+        </div>
+        <div class="attribute-value attribute-mod">
+          <input name="system.details.injuries.max" type="number" value="{{system.details.injuries.max}}" data-dtype="Number"
+            placeholder=0 title="{{ localize 'TYOA.InjuriesMax' }}" />
+        </div>
+      </li>
+      <li class="attribute ability-score">
         <h4 class="attribute-name box-title" title="{{ localize 'TYOA.movement.long'}}">
           {{localize 'TYOA.movement.short'}}
         </h4>
-        {{#if config.showMovement}}
         <div class="attribute-value attribute-mod">
-          <input name="system.movement.exploration" title="{{localize 'TYOA.movement.turn'}}" type="number"
-            value="{{system.movement.exploration}}" data-dtype="Number" disabled />
+          <input name="system.movement.base" title="{{localize 'TYOA.movement.base'}}" type="number"
+            value="{{system.movement.base}}" data-dtype="Number" disabled />
         </div>
-        {{/if}}
       </li>
     </ul>
   </div>
@@ -117,8 +141,7 @@
           </div>
           <div class="field-xshort"></div>
           <div class="field-xshort">
-            <input name="system.skills.unspent" type="number" value="{{system.skills.unspent}}" data-dtype="Number"
-              style="width:35px;" />
+            {{system.details.points.unspent}}
           </div>
         </div>
       </li>

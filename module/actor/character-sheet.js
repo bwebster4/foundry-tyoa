@@ -41,7 +41,7 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
    */
   _prepareItems(data) {
     // Partition items by category
-    let [items, weapons, armors, abilities, spells, arts, foci, skills] =
+    let [items, weapons, armors, abilities, techniques, foci, skills] =
       this.actor.items.reduce(
         (arr, item) => {
           // Classify items into types
@@ -49,40 +49,46 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
           else if (item.type === "weapon") arr[1].push(item);
           else if (item.type === "armor") arr[2].push(item);
           else if (item.type === "ability") arr[3].push(item);
-          else if (item.type === "spell") arr[4].push(item);
-          else if (item.type === "art") arr[5].push(item);
-          else if (item.type === "focus") arr[6].push(item);
-          else if (item.type === "skill") arr[7].push(item);
+          else if (item.type === "technique") arr[4].push(item);
+          else if (item.type === "focus") arr[5].push(item);
+          else if (item.type === "skill") arr[6].push(item);
           return arr;
         },
         [[], [], [], [], [], [], [], []]
       );
 
-    // Sort spells by level
-    var sortedSpells = {};
-    var slots = {};
-    for (var i = 0; i < spells.length; i++) {
-      const lvl = spells[i].system.lvl;
-      if (!sortedSpells[lvl]) sortedSpells[lvl] = [];
-      if (!slots[lvl]) slots[lvl] = 0;
-      slots[lvl] += spells[i].system.memorized;
-      sortedSpells[lvl].push(spells[i]);
+    // Sort techniques by skill
+    var unsortedTechniques = {};
+    var techSkills = [];
+    for (var i = 0; i < techniques.length; i++) {
+      const skill = techniques[i].system.skill;
+      if (!unsortedTechniques[skill]) {
+        unsortedTechniques[skill] = [];
+        techSkills.push(skill);
+      }
+      unsortedTechniques[skill].push(techniques[i]);
     }
 
-    // Sort each level
-    Object.keys(sortedSpells).forEach((level) => {
-      let list = insertionSort(sortedSpells[level], "name");
-      list = insertionSort(list, "system.class");
-      sortedSpells[level] = list;
-    });
+    techSkills.sort();
+    var sortedTechniques = [];
+    for (var i = 0; i < techSkills.length; i++) {
+      const skill = techSkills[i];
+      var levelSorted = insertionSort(unsortedTechniques[skill], "system.lvl");
+      sortedTechniques.push(...levelSorted);
+    }
 
-    data.slots = {
-      used: slots,
-    };
+    // Sort each skill
+    // Object.keys(sortedTechniques).forEach((skill) => {
+    //   let list = insertionSort(sortedTechniques[skill], "system.lvl");
+    //   list = insertionSort(list, "name");
+    //   sortedTechniques[skill] = list;
+    // });
 
-    // Sort arts by name and then by source
-    arts = insertionSort(arts, "name");
-    arts = insertionSort(arts, "system.source");
+
+    // // Sort techniques by skill and then by level
+    // let skillSortedTechniques = insertionSort(techniques, "system.skill");
+    // let levelSortedTechniques = insertionSort(skillSortedTechniques, "system.lvl");
+    // let nameSortedTechniques = insertionSort(levelSortedTechniques, "name");
 
     // Divide skills into primary and secondary
     const primarySkills = insertionSort(
@@ -100,11 +106,10 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       armors: insertionSort(armors, "name"),
       abilities: insertionSort(abilities, "name"),
       weapons: insertionSort(weapons, "name"),
-      arts: arts,
+      techniques: sortedTechniques,
       foci: insertionSort(foci, "name"),
       skills: [...primarySkills, ...secondarySkills],
     };
-    data.spells = sortedSpells;
   }
 
   adjustCurrency() {
@@ -157,7 +162,7 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
             icon: '<i class="fas fa-check"></i>',
             callback: (html) => {
               resolve({
-                choice: html.find('select[name="choice"]').val(),
+                choice: html.find('input[name="choice"]').val(),
               });
             },
           },
@@ -206,10 +211,8 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
   _pushLang(table) {
     const data = this.actor.system;
     let update = duplicate(data[table]);
-    let language = game.settings.get("tyoa", "languageList");
-    let languages = language.split(",");
     this._chooseLang().then((dialogInput) => {
-      const name = languages[dialogInput.choice];
+      const name = dialogInput.choice;
       if (update.value) {
         update.value.push(name);
       } else {
@@ -231,6 +234,22 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
 
   /* -------------------------------------------- */
 
+  async _updateSpentSkillPoints(event) {
+    event.preventDefault();
+
+    const newValue = parseInt(event.currentTarget.value);
+    const unspent = this.actor.system.details.points.value - newValue;
+    return this.actor.update({ "system.details.points.unspent": unspent });
+  }
+
+  async _updateSkillPoints(event) {
+    event.preventDefault();
+
+    const newValue = parseInt(event.currentTarget.value);
+    const unspent = newValue - this.actor.system.details.points.spent;
+    return this.actor.update({ "system.details.points.unspent": unspent });
+  }
+  
   async _onQtChange(event) {
     event.preventDefault();
     const itemId = event.currentTarget.closest(".item").dataset.itemId;
@@ -264,7 +283,6 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       let actorObject = this.actor;
       let element = ev.currentTarget;
       let score = element.parentElement.parentElement.dataset.score;
-      let stat = element.parentElement.parentElement.dataset.stat;
       if (!score) {
         actorObject.rollCheck(score, { event: event });
       }
@@ -374,6 +392,15 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       this.adjustCurrency(ev);
     });
 
+    // html.find(".skillPoints input")
+    //   .click((ev) => ev.target.select())
+    //   .change(this._updateSkillPoints.bind(this));
+
+    // html.find(".spentSkillPoints input")
+    //   .click((ev) => ev.target.select())
+    //   .change(this._updateSpentSkillPoints.bind(this));
+
+
     // Use unspent skill points to improve the skill
     html.find(".skill-up").click(async (ev) => {
       ev.preventDefault();
@@ -381,33 +408,12 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       const skill = this.actor.items.get(li.data("itemId"));
       if (skill.type == "skill") {
         const rank = skill.system.ownedLevel;
-        // Check if char has sufficient level
-        if (rank > 0) {
-          const lvl = this.actor.system.details.level;
-          if (rank == 1 && lvl < 3) {
-            ui.notifications?.error(
-              "Must be at least level 3 (edit manually to override)"
-            );
-            return;
-          } else if (rank == 2 && lvl < 6) {
-            ui.notifications?.error(
-              "Must be at least level 6 (edit manually to override)"
-            );
-            return;
-          } else if (rank == 3 && lvl < 9) {
-            ui.notifications?.error(
-              "Must be at least level 9 (edit manually to override)"
-            );
-            return;
-          } else if (rank > 3) {
-            ui.notifications?.error("Cannot auto-level above 4");
-            return;
-          }
-        }
         // check costs and update if points available
         const skillCost = rank + 2;
-        const skillPointsAvail = this.actor.system.skills.unspent;
+        const unspent = this.actor.system.details.points.value - this.actor.system.details.points.spent;
+        const skillPointsAvail = this.actor.system.details.points.unspent;
         if (skillCost > skillPointsAvail) {
+          await this.actor.update({ "system.details.points.unspent": unspent });
           ui.notifications.error(
             `Not enough skill points. Have: ${skillPointsAvail}, need: ${skillCost}`
           );
@@ -417,9 +423,11 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
           return;
         }
         await skill.update({ "system.ownedLevel": rank + 1 });
-        const newSkillPoints = skillPointsAvail - skillCost;
-        await this.actor.update({ "system.skills.unspent": newSkillPoints });
-        ui.notifications.info(`Removed ${skillCost} skill points`);
+        const newSpentPoints = this.actor.system.details.points.spent + skillCost;
+        const newUnspentPoints = unspent - skillCost;
+        await this.actor.update({ "system.details.points.spent": newSpentPoints });
+        await this.actor.update({ "system.details.points.unspent": newUnspentPoints });
+        ui.notifications.info(`Added ${skillCost} spent skill points`);
       }
     });
 

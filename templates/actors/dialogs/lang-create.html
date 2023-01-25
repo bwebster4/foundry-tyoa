@@ -2,13 +2,7 @@
     <div class="form-group">
         <label>{{localize 'TYOA.Language'}}</label>
         <div class="form-fields">
-            <select name="choice">
-                {{#select choices}}
-                {{#each choices as |label mode|}}
-                <option value="{{mode}}">{{label}}</option>
-                {{/each}}
-                {{/select}}
-            </select>
+            <input type="text" name="choice" value="" data-dtype="String" />
         </div>
     </div>
 </div>
