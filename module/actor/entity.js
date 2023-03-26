@@ -632,7 +632,7 @@ export class TyoaActor extends Actor {
   }
 
   computeEncumbrance() {
-    if (this.type === "monster") return;
+    if (this.type !== "character") return;
     const data = this.system;
 
     // Compute encumbrance
@@ -808,7 +808,7 @@ export class TyoaActor extends Actor {
 
   // Compute Effort
   computeEffort() {
-    if (this.type === "faction") return;
+    if (this.type === "ship") return;
 
     let effort = 0;
     const techniques = this.items.filter((a) => a.type == "technique");
@@ -836,6 +836,16 @@ export class TyoaActor extends Actor {
 
   computeAC() {
     if (this.type != "character") {
+      if(this.system.aacm === 0){
+        this.system.aacm = {
+          value: 10
+        };
+      }
+      if(this.system.aacr === 0){
+        this.system.aacr = {
+          value: 10
+        };
+      }
       return;
     }
 
@@ -849,6 +859,16 @@ export class TyoaActor extends Actor {
     let ranged = data.aacr.mod;
     let exertPenalty = 0;
     let sneakPenalty = 0;
+
+    let fightingSkill = this.items.find((s) => s.name == "Fighting");
+    let fighting = -1;
+    if (fightingSkill) fighting = fightingSkill.system.ownedLevel;
+
+    let markSkill = this.items.find((s) => s.name == "Marksmanship");
+    let mark = -1;
+    if (markSkill) mark = markSkill.system.ownedLevel;
+
+    if(fighting == -1 && mark == -1) baseAac = 8;
 
     const armors = this.items.filter((i) => i.type == "armor");
     armors.forEach((a) => {

@@ -3,6 +3,7 @@ export const preloadHandlebarsTemplates = async function () {
         //Character Sheets
         'systems/tyoa/templates/actors/character-sheet.html',
         'systems/tyoa/templates/actors/monster-sheet.html',
+        'systems/tyoa/templates/actors/ship-sheet.html',
         'systems/tyoa/templates/actors/faction-sheet.html',
         //Actor partials
         //Sheet tabs
@@ -14,6 +15,9 @@ export const preloadHandlebarsTemplates = async function () {
 
         'systems/tyoa/templates/actors/partials/monster-header.html',
         'systems/tyoa/templates/actors/partials/monster-attributes-tab.html',
+
+        'systems/tyoa/templates/actors/partials/ship-header.html',
+        'systems/tyoa/templates/actors/partials/ship-attributes-tab.html',
 
         'systems/tyoa/templates/actors/partials/faction-assets.html'
     ];

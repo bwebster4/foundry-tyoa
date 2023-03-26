@@ -1,6 +1,7 @@
 {
   "ACTOR.TypeCharacter": "Character",
   "ACTOR.TypeMonster": "Monster",
+  "ACTOR.TypeShip": "Ship",
   "ACTOR.TypeFaction": "Faction",
   "ITEM.TypeAbility": "Ability",
   "ITEM.TypeArmor": "Armor",
@@ -457,6 +458,13 @@
   "TYOA.colors.blue": "Blue",
   "TYOA.colors.orange": "Orange",
   "TYOA.colors.white": "White",
+
+  "TYOA.ship.cargo": "Cargo",
+  "TYOA.ship.crew": "Crew",
+  "TYOA.ship.oars": "Oars",
+  "TYOA.ship.oarsLong": "Movement speed under oar power",
+  "TYOA.ship.sail": "Sails",
+  "TYOA.ship.sailLong": "Movement speed under sail",
 
   "TYOA.reaction.check": "Reaction Check",
   "TYOA.reaction.Hostile": "{name} is as aggressively hostile as the situation allows.",

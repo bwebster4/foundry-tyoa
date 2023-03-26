@@ -57,12 +57,10 @@ export class TyoaItemSheet extends ItemSheet {
    * @param html {HTML}   The prepared HTML object ready to be rendered into the DOM
    */
   activateListeners(html) {
-    html.find('input[data-action="add-tag"]').keypress((ev) => {
-      if (event.which == 13) {
-        let value = $(ev.currentTarget).val();
-        let values = value.split(',');
-        this.object.pushTag(values);
-      }
+    html.find('input[data-action="add-tag"]').focusout((ev) => {
+      let value = $(ev.currentTarget).val();
+      let values = value.split(',');
+      this.object.pushTag(values);
     });
     html.find('.tag-delete').click((ev) => {
       let value = ev.currentTarget.parentElement.dataset.tag;

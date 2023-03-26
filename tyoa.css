@@ -179,6 +179,16 @@
   .tyoa.sheet.actor.monster .sheet-body .attributes-tab .attribute-value.flexrow {
     flex-direction: row;
   }
+  .tyoa.sheet.actor.ship .sheet-body .attributes-tab section.flexrow {
+    flex-direction: column;
+  }
+  .tyoa.sheet.actor.ship .sheet-body .attributes-tab {
+    flex-direction: row;
+    flex-grow: 0;
+  }
+  .tyoa.sheet.actor.ship .sheet-body .attributes-tab .attribute-value.flexrow {
+    flex-direction: row;
+  }
   .tyoa.sheet.actor .sheet-body .attribute-group.skill-group {
     margin-left: 0px;
     margin-right: 25px;
@@ -260,6 +270,15 @@
   .tyoa.sheet.actor.monster .sheet-body .attributes-tab .inventory {
     width: 420px;
   }
+  .tyoa.sheet.actor.ship .sheet-body .inventory {
+    padding-top: 0px;
+    margin-top: 0px;
+    max-height: 380px;
+    overflow: auto;
+  }
+  .tyoa.sheet.actor.ship .sheet-body .attributes-tab .inventory {
+    width: 420px;
+  }
   .tyoa.sheet.actor.character .sheet-body .attributes-tab .inventory .item-titles {
     margin-top: 2px;
   }
@@ -296,6 +315,9 @@
     margin-left: 4px;
   }
   .tyoa.sheet.actor.monster .inventory .item-titles {
+    margin-top: 0px;
+  }
+  .tyoa.sheet.actor.ship .inventory .item-titles {
     margin-top: 0px;
   }
   .tyoa.sheet.actor .sheet-body .inventory .item-titles .item-name {
@@ -447,7 +469,7 @@
   }
   .tyoa.sheet.actor .sheet-body .inventory .item-controls {
     font-size: 12px;
-    flex-basis: 60px;
+    flex-basis: 70px;
     flex-grow: 0;
     text-align: right;
     margin-right: 4px;
@@ -1372,6 +1394,82 @@
     font-size: 10px;
   }
   .tyoa.actor.monster .panel.abilities .item-list .item-entry .item-pattern {
+    flex: 0 0 15px;
+    cursor: pointer;
+  }
+   /* TODO: Fix item description sizing */
+   .tyoa.actor.ship {
+    min-height: 565px;
+    min-width: 480px;
+  }
+  .tyoa.actor.ship .header-details .summary .treasure-table {
+    text-align: center;
+  }
+  .tyoa.actor.ship .header-details .summary .check-field:hover .check {
+    display: block;
+  }
+  .tyoa.actor.ship .header-details .summary .check-field .check {
+    display: none;
+    line-height: 35px;
+    flex: 0 0 20px;
+    position: absolute;
+    font-size: 12px;
+  }
+  .tyoa.actor.ship .header-details .summary .check-field .check:hover {
+    color: rgba(0, 0, 0, 0.9);
+  }
+  .tyoa.actor.ship .sheet-body .editor {
+    height: 350px;
+  }
+  .tyoa.actor.ship .sheet-body .attributes-tab {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    height: 100%;
+    margin-bottom: 0px;
+  }
+  .tyoa.actor.ship .sheet-body .attributes-tab .attribute-row .attributes {
+    justify-content: space-between;
+  }
+  .tyoa.actor.ship .sheet-body .attributes-tab .attribute-row .attribute-group {
+    margin: 5px;
+  }
+  .tyoa.actor.ship .sheet-body .attributes-tab .attributes .attribute {
+    flex: 0 0 60px;
+    max-width: 80px;
+    height: 55px;
+    margin: 0px 10px 10px 10px;
+  }
+  .tyoa.actor.ship .sheet-body .attributes-tab .attributes .attribute .attribute-value {
+    line-height: 15px;
+  }
+  .tyoa.actor.ship .sheet-body .attributes-tab .attributes .attribute.health {
+    flex: 0 0 85px;
+  }
+  .tyoa.actor.ship .attributes .attribute.health {
+    position: relative;
+  }
+  .tyoa.actor.ship .attributes .attribute.health .attribute-name .hp-roll {
+    font-size: 12px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    color: #d8d6c9;
+  }
+  .tyoa.actor.ship .attributes .attribute.health .attribute-name .hp-roll:hover {
+    color: white;
+  }
+  .tyoa.actor.ship .attribute-group .attacks-description {
+    margin: 2px 0 25px;
+    padding: 0;
+    text-align: center;
+    border-bottom: 1px solid #7a7971;
+  }
+  .tyoa.actor.ship .attribute-group .attacks-description label {
+    color: #7a7971;
+    font-size: 10px;
+  }
+  .tyoa.actor.ship .panel.abilities .item-list .item-entry .item-pattern {
     flex: 0 0 15px;
     cursor: pointer;
   }

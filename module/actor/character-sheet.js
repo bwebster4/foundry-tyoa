@@ -392,13 +392,13 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       this.adjustCurrency(ev);
     });
 
-    // html.find(".skillPoints input")
-    //   .click((ev) => ev.target.select())
-    //   .change(this._updateSkillPoints.bind(this));
+    html.find(".skillPoints input")
+      .click((ev) => ev.target.select())
+      .change(this._updateSkillPoints.bind(this));
 
-    // html.find(".spentSkillPoints input")
-    //   .click((ev) => ev.target.select())
-    //   .change(this._updateSpentSkillPoints.bind(this));
+    html.find(".spentSkillPoints input")
+      .click((ev) => ev.target.select())
+      .change(this._updateSpentSkillPoints.bind(this));
 
 
     // Use unspent skill points to improve the skill

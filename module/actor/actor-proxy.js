@@ -5,6 +5,7 @@ import { TyoaFaction } from "./faction.js";
 const actorMappings = {
   character: TyoaActor,
   monster: TyoaActor,
+  ship: TyoaActor,
   faction: TyoaFaction,
 
 };

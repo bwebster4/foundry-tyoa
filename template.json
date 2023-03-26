@@ -1,6 +1,6 @@
 {
   "Actor": {
-    "types": ["character", "monster", "faction"],
+    "types": ["character", "monster", "ship", "faction"],
     "templates": {
       "common": {
         "retainer": {
@@ -132,6 +132,42 @@
         "value": 4,
         "max": 4
       }
+    },
+    "ship": {
+      "templates": ["common"],
+      "details": {
+        "biography": "",
+        "treasure": {
+          "table": "",
+          "type": ""
+        },
+        "hdSkills": 0,
+        "wdSkills": 0
+      },
+      "attacks": "",
+      "damageBonus": 0,
+      "character": false,
+      "cargo": 0,
+      "cost": 0,
+      "crew": {
+        "min": 1,
+        "max": 10
+      },
+      "movement": {
+        "oar": 0,
+        "sail": 0
+      },
+      "hp": {
+        "hd": "4",
+        "value": 4,
+        "max": 4
+      },
+      "dp": {
+        "wd": "4",
+        "value": 4,
+        "max": 4
+      },
+      "traits": ""
     },
     "faction": {
       "description": "",

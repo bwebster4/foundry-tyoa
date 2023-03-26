@@ -1,0 +1,32 @@
+<img class="profile-img" src="{{img}}" data-edit="img" title="{{name}}" />
+<section class="header-details flexrow">
+  <h1 class="charname">
+    <input name="name" type="text" value="{{name}}" placeholder="{{localize 'TYOA.details.name'}}" />
+  </h1>
+  <ul class="summary flexrow">
+    <li class="flexrow check-field">
+      <div>
+        <input type="text" name="system.cost" value="{{system.cost}}" />
+        <label>{{localize 'TYOA.asset.cost'}}</label>
+      </div>
+    </li>
+    <li class="flexrow check-field">
+      <div>
+        <input type="text" name="system.cargo" value="{{system.cargo}}" />
+        <label>{{localize 'TYOA.ship.cargo'}}</label>
+      </div>
+    </li>
+    <li class="flexrow check-field">
+      <div>
+        <input type="number" name="system.initiative.mod" value="{{system.initiative.mod}}" />
+        <label>{{localize 'TYOA.Initiative'}}</label>
+      </div>
+    </li>
+    <li class="flexrow check-field flex3">
+      <div>
+        <input type="text" name="system.traits" value="{{system.traits}}" />
+        <label>{{localize 'TYOA.items.enterTrait'}}</label>
+      </div>
+    </li>
+  </ul>
+</section>

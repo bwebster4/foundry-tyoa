@@ -42,5 +42,5 @@
   "gridUnits": "ft",
   "url": "https://github.com/bwebster4/foundry-tyoa",
   "manifest": "https://github.com/bwebster4/foundry-tyoa/releases/latest/download/system.json",
-  "download": "https://github.com/bwebster4/foundry-tyoa/releases/download/v0.1.0/tyoa.zip"
+  "download": "https://github.com/bwebster4/foundry-tyoa/releases/latest/download/tyoa.zip"
 }

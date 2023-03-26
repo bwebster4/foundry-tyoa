@@ -2,6 +2,7 @@
 import { TyoaItemSheet } from "./module/item/item-sheet.js";
 import { TyoaActorSheetCharacter } from "./module/actor/character-sheet.js";
 import { TyoaActorSheetMonster } from "./module/actor/monster-sheet.js";
+import { TyoaActorSheetShip } from "./module/actor/ship-sheet.js";
 import { TyoaActorSheetFaction } from "./module/actor/faction-sheet.js";
 import { preloadHandlebarsTemplates } from "./module/preloadTemplates.js";
 import { TyoaActor } from "./module/actor/entity.js";
@@ -58,6 +59,11 @@ Hooks.once("init", async function () {
     types: ["monster"],
     makeDefault: true,
     label: "TYOA.SheetClassMonster"
+  });
+  Actors.registerSheet("tyoa", TyoaActorSheetShip, {
+    types: ["ship"],
+    makeDefault: true,
+    label: "TYOA.SheetClassShip"
   });
   Actors.registerSheet("tyoa", TyoaActorSheetFaction, {
     types: ["faction"],
