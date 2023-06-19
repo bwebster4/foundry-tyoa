@@ -10,11 +10,6 @@
   "templateVersion": 7,
   "authors": [
     {
-      "name": "Aaron Lutomski",
-      "email": "sobran@gmail.com",
-      "discord": "Sobran#8580"
-    },
-    {
       "name": "Brandon Webster",
       "email": "bwebster496@gmail.com"
     }
@@ -28,6 +23,166 @@
       "system": "tyoa",
       "module": "tyoa",
       "path": "packs/skills.db",
+      "type": "Item"
+    },
+    {
+      "name": "armor",
+      "label": "Armor",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/armor.db",
+      "type": "Item"
+    },
+    {
+      "name": "weapons",
+      "label": "Weapons",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/weapons.db",
+      "type": "Item"
+    },
+    {
+      "name": "animals-techniques",
+      "label": "Animals Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/animals-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "athletics-techniques",
+      "label": "Athletics Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/athletics-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "biomancy-techniques",
+      "label": "Biomancy Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/biomancy-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "chronomancy-techniques",
+      "label": "Chronomancy Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/chronomancy-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "communication-techniques",
+      "label": "Communication Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/communication-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "crafting-techniques",
+      "label": "Crafting Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/crafting-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "fighting-techniques",
+      "label": "Fighting Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/fighting-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "knowledge-techniques",
+      "label": "Knowledge Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/knowledge.db",
+      "type": "Item"
+    },
+    {
+      "name": "leadership-techniques",
+      "label": "Leadership Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/leadership.db",
+      "type": "Item"
+    },
+    {
+      "name": "marksmanship-techniques",
+      "label": "Marksmanship Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/marksmanship.db",
+      "type": "Item"
+    },
+    {
+      "name": "metamancy-techniques",
+      "label": "Metamancy Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/metamancy-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "observation-techniques",
+      "label": "Observation Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/observation-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "performance-techniques",
+      "label": "Performance Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/performance-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "perseverance-techniques",
+      "label": "Perseverance Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/perseverance.db",
+      "type": "Item"
+    },
+    {
+      "name": "sailing-techniques",
+      "label": "Sailing Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/sailing-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "stealth-techniques",
+      "label": "Stealth Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/stealth-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "survival-techniques",
+      "label": "Survival Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/survival-techniques.db",
+      "type": "Item"
+    },
+    {
+      "name": "toughness-techniques",
+      "label": "Toughness Techniques",
+      "system": "tyoa",
+      "module": "tyoa",
+      "path": "packs/toughness-techniques.db",
       "type": "Item"
     }
   ],
