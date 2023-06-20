@@ -759,6 +759,7 @@ export class TyoaActor extends Actor {
       base: newBase,
       exploration: newBase * 3,
       overland: newBase / 5,
+      bonus: bonus
     };
   }
 
@@ -904,10 +905,12 @@ export class TyoaActor extends Actor {
       }
     } else {
       this.system.aacm = {
-        value: baseAac + melee
+        value: baseAac + melee,
+        mod: melee
       };
       this.system.aacr = {
-        value: baseAac + ranged
+        value: baseAac + ranged,
+        mod: ranged
       }
     }
     this.system.skills.sneakPenalty = sneakPenalty;

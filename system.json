@@ -2,10 +2,10 @@
   "id": "tyoa",
   "title": "The Years of Adventure",
   "description": "Play The Years of Adventure on Foundry VTT",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "compatibility": {
-    "minimum": 10,
-    "verified": "10"
+    "minimum": 11,
+    "verified": "11"
   },
   "templateVersion": 7,
   "authors": [
