@@ -17,19 +17,18 @@ export class TyoaActor extends Actor {
     this.computeTreasure();
     this.computeEffort();
     this.computeTotalSP();
-    this.setXP();
     this.computeInit();
   }
 
-  async createEmbeddedDocuments(embeddedName, data = [], context = {}) {
-    if (!game.user.isGM && !this.isOwner) return;
-    data.map((item) => {
-      if (item.img === undefined) {
-        item.img = TyoaItem.defaultIcons[item.type];
-      }
-    });
-    super.createEmbeddedDocuments(embeddedName, data, context);
-  }
+  // async createEmbeddedDocuments(embeddedName, data = [], context = {}) {
+  //   if (!game.user.isGM && !this.isOwner) return;
+  //   data.map((item) => {
+  //     if (item.img === undefined) {
+  //       item.img = TyoaItem.defaultIcons[item.type];
+  //     }
+  //   });
+  //   super.createEmbeddedDocuments(embeddedName, data, context);
+  // }
 
   /* -------------------------------------------- */
   /*  Socket Listeners and Handlers
@@ -398,41 +397,6 @@ export class TyoaActor extends Actor {
     });
   }
 
-  rollDamage(attData, options = {}) {
-    const data = this.system;
-
-    const rollData = {
-      actor: this.system,
-      item: attData.item,
-      roll: {
-        type: "damage",
-      },
-    };
-
-    let dmgParts = [];
-    if (!attData.roll.dmg) {
-      dmgParts.push("1d6");
-    } else {
-      dmgParts.push(attData.roll.dmg);
-    }
-
-    // Add Str to damage
-    if (attData.roll.type == "melee") {
-      dmgParts.push(data.scores.str.mod);
-    }
-
-    // Damage roll
-    TyoaDice.Roll({
-      event: options.event,
-      parts: dmgParts,
-      data: rollData,
-      skipDialog: true,
-      speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `${attData.label} - ${game.i18n.localize("TYOA.Damage")}`,
-      title: `${attData.label} - ${game.i18n.localize("TYOA.Damage")}`,
-    });
-  }
-
   async targetAttack(data, type, options) {
     if (game.user.targets.size > 0) {
       for (let t of game.user.targets.values()) {
@@ -495,9 +459,10 @@ export class TyoaActor extends Actor {
           attData.item.system.shockTotal + skillValue;
       }
     } else {
-      attData.item.system.shockTotal =
-        Number(this.system.damageBonus) +
-        Number(attData.item.system.shock.damage);
+      attData.item.system.shockTotal = Number(attData.item.system.shock.damage);
+    }
+    if(this.system.damageBonus){
+      attData.item.system.shockTotal += Number(this.system.damageBonus);
     }
 
     // TODO: Add range selector in dialogue if missile attack.
@@ -536,11 +501,10 @@ export class TyoaActor extends Actor {
         dmgParts.push(skillValue);
         dmgLabels.push(`+${skillValue} (${skillAttack})`);
       }
-    } else {
-      if(this.system.damageBonus){
-        dmgParts.push(this.system.damageBonus);
-        dmgLabels.push(`+${this.system.damageBonus.toString()} (damage bonus)`);
-      }
+    }
+    if(this.system.damageBonus){
+      dmgParts.push(this.system.damageBonus);
+      dmgLabels.push(`+${this.system.damageBonus.toString()} (damage bonus)`);
     }
 
     const rollTitle = `1d20 ${rollLabels.join(" ")}`;
@@ -607,28 +571,6 @@ export class TyoaActor extends Actor {
       }
     }
     this.system.initiative.value = initValue;
-  }
-
-  setXP() {
-    if (this.type != "character") {
-      return;
-    }
-    const data = this.system;
-    let xpRate = [];
-    let level = data.details.level - 1;
-
-    // Retrieve XP Settings
-    switch (game.settings.get("tyoa", "xpConfig")) {
-      case "xpSlow":
-        xpRate = [6, 15, 24, 36, 51, 69, 87, 105, 139];
-        break;
-      case "xpFast":
-        xpRate = [3, 6, 12, 18, 27, 39, 54, 72, 93];
-        break;
-      case "xpCustom":
-        xpRate = game.settings.get("tyoa", "xpCustomList").split(",");
-        break;
-    }
   }
 
   computeEncumbrance() {
@@ -917,61 +859,6 @@ export class TyoaActor extends Actor {
     this.system.skills.exertPenalty = exertPenalty;
   }
 
-  // Creates a list of skills based on the following list. Was used to generate
-  // the initial skills list to populate a compendium
-  async createSkillsManually(data, options, user) {
-    const actorData = this.system;
-    const skillList = [
-      "administer",
-      "connect",
-      "convince",
-      "craft",
-      "exert",
-      "heal",
-      "know",
-      "lead",
-      "magic",
-      "notice",
-      "perform",
-      "pray",
-      "punch",
-      "ride",
-      "sail",
-      "shoot",
-      "sneak",
-      "stab",
-      "survive",
-      "trade",
-      "work",
-      "biopsionics",
-      "metapsionics",
-      "precognition",
-      "telekinesis",
-      "telepathy",
-      "teleportation",
-      "polymath",
-    ];
-    const skills = skillList.map((el) => {
-      const skillKey = `TYOA.skills.${el}`;
-      const skillDesc = `TYOA.skills.desc.${el}`;
-      const imagePath = `/systems/tyoa/assets/skills/${el}.png`;
-      return {
-        type: "skill",
-        name: game.i18n.localize(skillKey),
-        data: {
-          ownedLevel: -1,
-          description: game.i18n.localize(skillDesc),
-          skillDice: "2d6"
-        },
-        img: imagePath,
-      };
-    });
-
-    if (data.type === "character") {
-      await this.createEmbeddedDocuments("Item", skills);
-    }
-  }
-
   /** @override*/
   async _onCreate(data, options, user) {
     await super._onCreate(data, options, user);
@@ -981,6 +868,7 @@ export class TyoaActor extends Actor {
       if (!data.items.filter((i) => i.type == "skill").length) {
         let skillPack = game.packs.get("tyoa.skills");
         let toAdd = await skillPack.getDocuments();
+        console.log(toAdd);
         let primarySkills = toAdd
           .map((item) => item.toObject());
         await this.createEmbeddedDocuments("Item", primarySkills);

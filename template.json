@@ -85,6 +85,7 @@
         "value": 4,
         "max": 4
       },
+      "damageBonus": 0,
       "treasure": 0,
       "skills": {
         "exertPenalty": 0,
@@ -192,7 +193,7 @@
     }
   },
   "Item": {
-    "types": ["ability", "armor", "technique", "focus", "item", "weapon", "asset", "skill"],
+    "types": ["ability", "armor", "technique", "focus", "item", "weapon", "asset", "skill", "motivation", "favor"],
     "item": {
       "description": "",
       "quantity": 1,
@@ -226,7 +227,7 @@
       "ac": "15"
     },
     "shockTotal": 0,
-    "skill": "stab",
+    "skill": "fighting",
     "tags": [],
     "slow": false,
     "missile": false,
@@ -284,6 +285,15 @@
     "rollTarget": 0,
     "blindroll": false,
     "save": ""
+  },
+  "motivation": {
+    "description": "",
+    "strength": 0,
+    "check": "2d6"
+  },
+  "favor": {
+    "description": "",
+    "quantity": 0
   },
   "asset": {
     "desc": "",

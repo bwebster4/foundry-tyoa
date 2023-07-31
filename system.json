@@ -2,7 +2,7 @@
   "id": "tyoa",
   "title": "The Years of Adventure",
   "description": "Play The Years of Adventure on Foundry VTT",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "compatibility": {
     "minimum": 11,
     "verified": "11"
@@ -22,7 +22,7 @@
       "label": "Skills",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/skills.db",
+      "path": "packs/skills",
       "type": "Item"
     },
     {
@@ -30,7 +30,7 @@
       "label": "Armor",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/armor.db",
+      "path": "packs/armor",
       "type": "Item"
     },
     {
@@ -38,7 +38,7 @@
       "label": "Weapons",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/weapons.db",
+      "path": "packs/weapons",
       "type": "Item"
     },
     {
@@ -46,7 +46,7 @@
       "label": "Animals Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/animals-techniques.db",
+      "path": "packs/animals-techniques",
       "type": "Item"
     },
     {
@@ -54,7 +54,7 @@
       "label": "Athletics Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/athletics-techniques.db",
+      "path": "packs/athletics-techniques",
       "type": "Item"
     },
     {
@@ -62,7 +62,7 @@
       "label": "Biomancy Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/biomancy-techniques.db",
+      "path": "packs/biomancy-techniques",
       "type": "Item"
     },
     {
@@ -70,7 +70,7 @@
       "label": "Chronomancy Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/chronomancy-techniques.db",
+      "path": "packs/chronomancy-techniques",
       "type": "Item"
     },
     {
@@ -78,7 +78,7 @@
       "label": "Communication Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/communication-techniques.db",
+      "path": "packs/communication-techniques",
       "type": "Item"
     },
     {
@@ -86,7 +86,7 @@
       "label": "Crafting Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/crafting-techniques.db",
+      "path": "packs/crafting-techniques",
       "type": "Item"
     },
     {
@@ -94,7 +94,7 @@
       "label": "Fighting Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/fighting-techniques.db",
+      "path": "packs/fighting-techniques",
       "type": "Item"
     },
     {
@@ -102,7 +102,7 @@
       "label": "Knowledge Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/knowledge.db",
+      "path": "packs/knowledge",
       "type": "Item"
     },
     {
@@ -110,7 +110,7 @@
       "label": "Leadership Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/leadership.db",
+      "path": "packs/leadership",
       "type": "Item"
     },
     {
@@ -118,7 +118,7 @@
       "label": "Marksmanship Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/marksmanship.db",
+      "path": "packs/marksmanship",
       "type": "Item"
     },
     {
@@ -126,7 +126,7 @@
       "label": "Metamancy Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/metamancy-techniques.db",
+      "path": "packs/metamancy-techniques",
       "type": "Item"
     },
     {
@@ -134,7 +134,7 @@
       "label": "Observation Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/observation-techniques.db",
+      "path": "packs/observation-techniques",
       "type": "Item"
     },
     {
@@ -142,7 +142,7 @@
       "label": "Performance Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/performance-techniques.db",
+      "path": "packs/performance-techniques",
       "type": "Item"
     },
     {
@@ -150,7 +150,7 @@
       "label": "Perseverance Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/perseverance.db",
+      "path": "packs/perseverance",
       "type": "Item"
     },
     {
@@ -158,7 +158,7 @@
       "label": "Sailing Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/sailing-techniques.db",
+      "path": "packs/sailing-techniques",
       "type": "Item"
     },
     {
@@ -166,7 +166,7 @@
       "label": "Stealth Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/stealth-techniques.db",
+      "path": "packs/stealth-techniques",
       "type": "Item"
     },
     {
@@ -174,7 +174,7 @@
       "label": "Survival Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/survival-techniques.db",
+      "path": "packs/survival-techniques",
       "type": "Item"
     },
     {
@@ -182,7 +182,7 @@
       "label": "Toughness Techniques",
       "system": "tyoa",
       "module": "tyoa",
-      "path": "packs/toughness-techniques.db",
+      "path": "packs/toughness-techniques",
       "type": "Item"
     }
   ],

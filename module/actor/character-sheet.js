@@ -41,7 +41,7 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
    */
   _prepareItems(data) {
     // Partition items by category
-    let [items, weapons, armors, abilities, techniques, foci, skills] =
+    let [items, weapons, armors, abilities, techniques, foci, skills, motivations, favor] =
       this.actor.items.reduce(
         (arr, item) => {
           // Classify items into types
@@ -52,9 +52,11 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
           else if (item.type === "technique") arr[4].push(item);
           else if (item.type === "focus") arr[5].push(item);
           else if (item.type === "skill") arr[6].push(item);
+          else if (item.type === "motivation") arr[7].push(item);
+          else if (item.type === "favor") arr[8].push(item);
           return arr;
         },
-        [[], [], [], [], [], [], [], []]
+        [[], [], [], [], [], [], [], [], []]
       );
 
     // Sort techniques by skill
@@ -109,6 +111,8 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       techniques: sortedTechniques,
       foci: insertionSort(foci, "name"),
       skills: [...primarySkills, ...secondarySkills],
+      motivations: insertionSort(motivations, "name"),
+      favor: insertionSort(favor, "name")
     };
   }
 
@@ -257,6 +261,13 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
     return item.update({ "system.quantity": parseInt(event.target.value) });
   }
 
+  async _onMotStrengthChange(event) {
+    event.preventDefault();
+    const itemId = event.currentTarget.closest(".item").dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    return item.update({ "system.strength": parseInt(event.target.value) });
+  }
+
   async _onChargeChange(event) {
     event.preventDefault();
     const itemId = event.currentTarget.closest(".item").dataset.itemId;
@@ -278,22 +289,6 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
    */
   activateListeners(html) {
     super.activateListeners(html);
-
-    html.find(".ability-score .attribute-name a").click((ev) => {
-      let actorObject = this.actor;
-      let element = ev.currentTarget;
-      let score = element.parentElement.parentElement.dataset.score;
-      if (!score) {
-        actorObject.rollCheck(score, { event: event });
-      }
-    });
-
-    html.find(".skills .attribute-name a").click((ev) => {
-      let actorObject = this.actor;
-      let element = ev.currentTarget;
-      let expl = element.parentElement.parentElement.dataset.skills;
-      actorObject.rollSkills(expl, { event: event });
-    });
 
     html.find(".inventory .item-titles .item-caret").click((ev) => {
       let items = $(ev.currentTarget.parentElement.parentElement).children(
@@ -382,6 +377,11 @@ export class TyoaActorSheetCharacter extends TyoaActorSheet {
       .find(".quantity input")
       .click((ev) => ev.target.select())
       .change(this._onQtChange.bind(this));
+
+    html
+      .find(".motivation-strength input")
+      .click((ev) => ev.target.select())
+      .change(this._onMotStrengthChange.bind(this));
 
     html
       .find(".charges input")

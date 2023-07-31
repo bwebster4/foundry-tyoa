@@ -16,8 +16,6 @@ import * as macros from "./module/macros.js";
 import * as party from "./module/party.js";
 import { TyoaCombat } from "./module/combat.js";
 import * as migrations from "./module/migration.js";
-import { TyoaItemProxy } from "./module/item/item-proxy.js";
-import { TyoaActorProxy } from "./module/actor/actor-proxy.js";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -45,8 +43,8 @@ Hooks.once("init", async function () {
   // Register custom system settings
   registerSettings();
 
-  CONFIG.Actor.documentClass = TyoaActorProxy;
-  CONFIG.Item.documentClass = TyoaItemProxy;
+  CONFIG.Actor.documentClass = TyoaActor;
+  CONFIG.Item.documentClass = TyoaItem;
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);

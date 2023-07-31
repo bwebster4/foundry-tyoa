@@ -16,20 +16,19 @@ export class TyoaCombat {
       // }
       let initMod = cbt.actor.system.initiative.mod;
 
-      let observation  = cbt.actor.items.find((i) => i.name == "Observation");
+      let observation = cbt.actor.items.find((i) => i.name == "Observation");
+      let willSkills = cbt.actor.system.details.wdSkills;
+      let level = -1;
       if (observation) {
-        let level = observation.system.ownedLevel + initMod;
-        if (groupMods[group]) {
-          groupMods[group] = Math.max(level, groupMods[group]);
-        } else {
-          groupMods[group] = level;
-        }
+        level = observation.system.ownedLevel + initMod;
+      } else if(willSkills || willSkills === 0) {
+        level = willSkills + initMod;
+      }
+
+      if (groupMods[group]) {
+        groupMods[group] = Math.max(level, groupMods[group]);
       } else {
-        if (groupMods[group]) {
-          groupMods[group] = Math.max(initMod - 1, groupMods[group]);
-        } else {
-          groupMods[group] = initMod - 1;
-        }
+        groupMods[group] = level;
       }
     });
 

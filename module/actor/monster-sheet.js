@@ -39,7 +39,7 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
  _prepareItems(data) {
   // Partition items by category
   data.attackPatterns = [];
-  let [weapons, armors, items, techniques, abilities] = this.actor.items.reduce(
+  let [weapons, armors, items, techniques, abilities, motivations, favor] = this.actor.items.reduce(
     (arr, item) => {
       // Grab attack groups
       if (["weapon"].includes(item.type)) {
@@ -52,9 +52,11 @@ export class TyoaActorSheetMonster extends TyoaActorSheet {
       else if (item.type === "item") arr[2].push(item);
       else if (item.type === "technique") arr[3].push(item);
       else if (item.type === "ability") arr [4].push(item);
+      else if (item.type === "motivation") arr [4].push(item);
+      else if (item.type === "favor") arr [4].push(item);
       return arr;
     },
-    [[], [], [], [], [], []]
+    [[], [], [], [], [], [], []]
   );
 
   // Sort techniques by skill

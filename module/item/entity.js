@@ -100,25 +100,14 @@ export class TyoaItem extends Item {
 
     // Determine if armor penalty applies
     let armorPenalty = 0;
-    if (skillName == "Exert") {
+    if (skillName == "Athletics") {
       armorPenalty -= this.parent.system.skills.exertPenalty;
-    } else if (skillName == "Sneak") {
+    } else if (skillName == "Stealth") {
       armorPenalty -= this.parent.system.skills.sneakPenalty;
     }
 
-    // Determine skill level, taking into account polymath and unskilled penalties
-    let skillLevel;
-    const poly = this.parent.items.find((i) => i.name == "Polymath");
-    if (
-      !poly ||
-      skillName == "Shoot" ||
-      skillName == "Stab" ||
-      skillName == "Punch"
-    ) {
-      skillLevel = data.ownedLevel;
-    } else {
-      skillLevel = Math.max(poly.system.ownedLevel - 1, data.ownedLevel);
-    }
+    // Determine skill level
+    let skillLevel = data.ownedLevel;
 
     // Assemble dice pool
     const rollParts = [data.skillDice, skillLevel];
@@ -186,7 +175,6 @@ export class TyoaItem extends Item {
 
   rollWeapon(options = {}) {
     let isNPC = this.actor.type != "character";
-    const targets = 5;
     const data = this.system;
     let type = isNPC ? "attack" : "melee";
     const rollData = {
@@ -229,6 +217,30 @@ export class TyoaItem extends Item {
     return true;
   }
 
+  rollMotivationCheck(options = {}) {
+    const newData = {
+      actor: this.actor,
+      item: this,
+      roll: {},
+    };
+
+    // Assemble dice pool
+    const rollParts = [this.system.check, -this.system.strength];
+
+    const rollTitle = `${this.name} Check`;
+
+    let rollData = {
+      parts: rollParts,
+      data: newData,
+      title: rollTitle,
+      flavor: null,
+      speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+      form: null,
+      rollTitle: rollTitle,
+    };
+    return TyoaDice.sendRoll(rollData);
+  }
+
   async rollFormula(options = {}) {
     const data = this.system;
     if (!data.roll) {
@@ -261,20 +273,6 @@ export class TyoaItem extends Item {
       title: game.i18n.format("TYOA.roll.formula", { label: label }),
     });
   }
-
-  // spendSpell() {
-  //   const spellsLeft = this.actor.system.spells.perDay.value;
-  //   const spellsMax = this.actor.system.spells.perDay.max;
-  //   if (spellsLeft + 1 > spellsMax)
-  //     return ui.notifications.warn("No spell slots remaining!");
-  //   this.actor
-  //     .update({
-  //       "system.spells.perDay.value": spellsLeft + 1,
-  //     })
-  //     .then(() => {
-  //       this.show({ skipDialog: true });
-  //     });
-  // }
 
   spendTechnique() {
     if (this.system.magic) {
@@ -407,17 +405,16 @@ export class TyoaItem extends Item {
       case "technique":
         this.spendTechnique();
         break;
-      case "item":
-      case "armor":
-      case "focus":
-      case "ability":
-        this.show();
-        break;
       case "skill":
         this.rollSkill();
         break;
+      case "motivation":
+        this.rollMotivationCheck();
       case "asset":
         this.rollAsset();
+        break;
+      default:
+        this.show();
         break;
     }
   }
