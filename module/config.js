@@ -13,7 +13,6 @@ export const TYOA = {
     knowledge: "TYOA.skills.knowledge",
     leadership: "TYOA.skills.leadership",
     marksmanship: "TYOA.skills.marksmanship",
-    observation: "TYOA.skills.observation",
     performance: "TYOA.skills.performance",
     perseverance: "TYOA.skills.perseverance",
     sailing: "TYOA.skills.sailing",

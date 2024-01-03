@@ -10,7 +10,7 @@ export class TyoaActor extends Actor {
     super.prepareData();
 
     // Compute modifiers from actor scores
-    this.computeAC();
+    this.computeArmor();
     this.computeEncumbrance();
     this._calculateMovement();
     this.computeResources();
@@ -413,11 +413,8 @@ export class TyoaActor extends Actor {
 
   rollAttack(attData, options = {}) {
     const data = this.system;
-    const rollParts = ["1d20"];
-    const dmgParts = [];
+    const rollParts = [];
     const rollLabels = [];
-    const dmgLabels = [];
-    const weaponShock = attData.item.system.shock.damage;
     let skillAttack, skillValue;
     if (data.character) {
       skillAttack = attData.item.system.skill;
@@ -434,7 +431,7 @@ export class TyoaActor extends Actor {
       name: this.name,
     });
     if (!attData.item) {
-      dmgParts.push("1d6");
+      rollParts.push("1d4");
     } else {
       if (data.character) {
         if (attData.item.system.equipped) {
@@ -449,20 +446,7 @@ export class TyoaActor extends Actor {
         name: attData.item.name,
         readyState: readyState,
       });
-      dmgParts.push(attData.item.system.damage);
-    }
-
-    if (data.character) {
-      attData.item.system.shockTotal = weaponShock;
-      if (attData.item.system.skillDamage) {
-        attData.item.system.shockTotal =
-          attData.item.system.shockTotal + skillValue;
-      }
-    } else {
-      attData.item.system.shockTotal = Number(attData.item.system.shock.damage);
-    }
-    if(this.system.damageBonus){
-      attData.item.system.shockTotal += Number(this.system.damageBonus);
+      rollParts.push(attData.item.system.damage);
     }
 
     // TODO: Add range selector in dialogue if missile attack.
@@ -471,12 +455,12 @@ export class TyoaActor extends Actor {
         
       );
     } */
-    if (data.character) {
+    if (data.character && attData.item.system.skillDamage) {
       const unskilledAttack = attData.item.system.tags.find(
-        (weapon) => weapon.title === "CB"
+        (tag) => tag.title === "E"
       )
         ? 0
-        : -2;
+        : -1;
       if (skillValue == -1) {
         rollParts.push(unskilledAttack);
         rollLabels.push(`${unskilledAttack} (unskilled penalty)`);
@@ -486,36 +470,18 @@ export class TyoaActor extends Actor {
       }
     }
 
-    if (attData.item && attData.item.system.characterBonus) {
-      rollParts.push(attData.item.system.characterBonus);
-      rollLabels.push(`+${attData.item.system.characterBonus} (character bonus)`);
-    }
-
-    if (attData.item && attData.item.system.weaponBonus) {
-      rollParts.push(attData.item.system.weaponBonus);
-      rollLabels.push(`+${attData.item.system.weaponBonus} (weapon bonus)`);
-    }
-
-    if (data.character) {
-      if (attData.item.system.skillDamage) {
-        dmgParts.push(skillValue);
-        dmgLabels.push(`+${skillValue} (${skillAttack})`);
-      }
-    }
     if(this.system.damageBonus){
-      dmgParts.push(this.system.damageBonus);
-      dmgLabels.push(`+${this.system.damageBonus.toString()} (damage bonus)`);
+      rollParts.push(this.system.damageBonus);
+      rollLabels.push(`+${this.system.damageBonus.toString()} (damage bonus)`);
     }
 
-    const rollTitle = `1d20 ${rollLabels.join(" ")}`;
-    const dmgTitle = `${dmgParts[0]} ${dmgLabels.join(" ")}`;
+    const rollTitle = `${rollParts[0]} ${rollLabels.join(" ")}`;
 
     const rollData = {
       actor: this,
       item: attData.item,
       roll: {
         type: options.type,
-        dmg: dmgParts,
         save: attData.roll.save,
         target: attData.roll.target,
       },
@@ -531,7 +497,6 @@ export class TyoaActor extends Actor {
       flavor: label,
       title: label,
       rollTitle: rollTitle,
-      dmgTitle: dmgTitle,
     });
   }
 
@@ -560,15 +525,15 @@ export class TyoaActor extends Actor {
 
   computeInit() {
     let initValue = 0;
-    if (game.settings.get("tyoa", "initiative") != "group") {
-      if (this.type == "character") {
-        let observation = this.system.items.find((i) => i.name == "Observation");
-        let obsLevel = -1;
-        if (observation) obsLevel = observation.level;
-        initValue = this.system.initiative.mod + obsLevel;
-      } else {
-        initValue = this.system.initiative.mod;
-      }
+    if (this.type == "character") {
+      let fighting = this.items.find((i) => i.name == "Fighting");
+      let marksmanship = this.items.find((i) => i.name == "Marksmanship");
+      let skillMod = -1;
+      if (fighting) skillMod = fighting.level;
+      if (marksmanship && marksmanship.level > skillMod) skillMod = marksmanship.level;
+      initValue = this.system.initiative.mod + skillMod;
+    } else {
+      initValue = this.system.initiative.mod;
     }
     this.system.initiative.value = initValue;
   }
@@ -777,84 +742,54 @@ export class TyoaActor extends Actor {
     this.system.treasure = total;
   }
 
-  computeAC() {
+  computeArmor() {
     if (this.type != "character") {
-      if(this.system.aacm === 0){
-        this.system.aacm = {
-          value: 10
-        };
-      }
-      if(this.system.aacr === 0){
-        this.system.aacr = {
-          value: 10
-        };
-      }
       return;
     }
 
     const data = this.system;
+    const armors = this.items.filter((i) => i.type == "armor");
+
+    // Migrations
+    if(!data.armor){
+      let oldArmorMod = data.aacm || data.aac || 0;
+      let armorObj = {
+        value: 0,
+        mod: oldArmorMod
+      }
+      data.armor = armorObj
+    }
+    armors.forEach((a) => {
+      if(!a.system.armor){
+        a.system.armor = {
+          value: 0,
+          mod: 0,
+        };
+      }
+    });
 
     // Compute AC
-    let shield = 0;
-    let shieldBonus = 0;
-    let baseAac = 10;
-    let melee = data.aacm.mod;
-    let ranged = data.aacr.mod;
+    let armor = 0;
+    let naturalArmor = data.armor.mod;
     let exertPenalty = 0;
     let sneakPenalty = 0;
 
-    let fightingSkill = this.items.find((s) => s.name == "Fighting");
-    let fighting = -1;
-    if (fightingSkill) fighting = fightingSkill.system.ownedLevel;
-
-    let markSkill = this.items.find((s) => s.name == "Marksmanship");
-    let mark = -1;
-    if (markSkill) mark = markSkill.system.ownedLevel;
-
-    if(fighting == -1 && mark == -1) baseAac = 8;
-
-    const armors = this.items.filter((i) => i.type == "armor");
     armors.forEach((a) => {
       if (!a.system.equipped) {
         return;
       }
-      if (a.system.type != "shield") {
-        baseAac = a.system.aac.value + a.system.aac.mod;
-        // Check if armor is medium or heavy and apply appropriate Sneak/Exert penalty
-        if (a.system.type === "medium" && a.system.weight > sneakPenalty) {
-          sneakPenalty = a.system.weight;
-        }
-        if (a.system.type === "heavy" && a.system.weight > sneakPenalty) {
-          sneakPenalty = a.system.weight;
-        }
-        if (a.system.type === "heavy" && a.system.weight > exertPenalty) {
-          exertPenalty = a.system.weight;
-        }
-      } else if (a.system.type == "shield") {
-        shield = a.system.aac.value;
-        shieldBonus = a.system.aac.mod;
+      armor += a.system.armor.value;
+      // Check if armor is medium or heavy and apply appropriate Sneak/Exert penalty
+      if (a.system.type === "medium" || a.system.type === "heavy") {
+        sneakPenalty += a.system.weight;
+      }
+      if (a.system.type === "heavy") {
+        exertPenalty += a.system.weight;
       }
     });
-    if (shield > 0) {
-      let shieldOnly = shield;
-      let shieldAndArmor = baseAac + shieldBonus;
-      if (shieldOnly > shieldAndArmor) {
-        this.system.aacm = { value: shieldOnly + melee };
-        this.system.aacr = { value: shieldOnly + ranged };
-      } else {
-        this.system.aacm = { value: shieldAndArmor + melee };
-        this.system.aacr = { value: shieldAndArmor + ranged };
-      }
-    } else {
-      this.system.aacm = {
-        value: baseAac + melee,
-        mod: melee
-      };
-      this.system.aacr = {
-        value: baseAac + ranged,
-        mod: ranged
-      }
-    }
+
+    this.system.armor.value = armor + naturalArmor;
+    
     this.system.skills.sneakPenalty = sneakPenalty;
     this.system.skills.exertPenalty = exertPenalty;
   }
@@ -868,7 +803,6 @@ export class TyoaActor extends Actor {
       if (!data.items.filter((i) => i.type == "skill").length) {
         let skillPack = game.packs.get("tyoa.skills");
         let toAdd = await skillPack.getDocuments();
-        console.log(toAdd);
         let primarySkills = toAdd
           .map((item) => item.toObject());
         await this.createEmbeddedDocuments("Item", primarySkills);

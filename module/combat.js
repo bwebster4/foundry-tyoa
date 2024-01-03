@@ -16,13 +16,15 @@ export class TyoaCombat {
       // }
       let initMod = cbt.actor.system.initiative.mod;
 
-      let observation = cbt.actor.items.find((i) => i.name == "Observation");
-      let willSkills = cbt.actor.system.details.wdSkills;
+      let fighting = cbt.actor.items.find((i) => i.name == "Fighting");
+      let marksmanship = cbt.actor.items.find((i) => i.name == "Marksmanship");
+      let hitSkills = cbt.actor.system.details.hdSkills;
       let level = -1;
-      if (observation) {
-        level = observation.system.ownedLevel + initMod;
-      } else if(willSkills || willSkills === 0) {
-        level = willSkills + initMod;
+      if (fighting || marksmanship) {
+        if (fighting) level = fighting.system.ownedLevel;
+        if (marksmanship && marksmanship.system.ownedLevel > level) level = marksmanship.system.ownedLevel;
+      } else if(hitSkills || hitSkills === 0) {
+        level = hitSkills + initMod;
       }
 
       if (groupMods[group]) {
@@ -77,7 +79,7 @@ export class TyoaCombat {
   static async individualInitiative(combat, data) {
     let updates = [];
     let messages = [];
-    combat.combatants.forEach((c, i) => {
+    combat.combatants.forEach((c) => {
       // Initialize variables
       let alert = c.actor.items.filter((a) => a.name == "Alert");
       let roll = null;
@@ -87,12 +89,12 @@ export class TyoaCombat {
       // Check if initiative has already been manually rolled
       if (!c.initiative) {
         // Roll initiative
-        roll = new Roll("2d6+" + c.actor.system.initiative.value).roll({ async: false });
+        roll = new Roll("2d6+" + c.actor.initiative.value).roll({ async: false });
         roll.toMessage({
           flavor: game.i18n.format('TYOA.roll.individualInit', { name: c.token.name })
         });
         if (alert.length > 0) {
-          roll2 = new Roll("2d6+" + c.actor.system.initiative.value).roll({ async: false });
+          roll2 = new Roll("2d6+" + c.actor.initiative.value).roll({ async: false });
           roll2.toMessage({
             flavor: game.i18n.format('TYOA.roll.individualInit', { name: c.token.name })
           });

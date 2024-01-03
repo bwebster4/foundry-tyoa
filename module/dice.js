@@ -140,32 +140,6 @@ export class TyoaDice {
     });
   }
 
-  static digestAttackResult(data, roll) {
-    let result = {
-      isSuccess: false,
-      isFailure: false,
-      target: "",
-      total: roll.total,
-    };
-    const targetAac = data.roll.target
-      ? data.roll.target.actor.system.aac.value
-      : 0;
-    result.victim = data.roll.target ? data.roll.target.data.name : null;
-
-    if (roll.total < targetAac) {
-      result.details = game.i18n.format(
-        "TYOA.messages.AttackAscendingFailure"
-      );
-      return result;
-      }
-      result.details = game.i18n.format("TYOA.messages.AttackAscendingSuccess", {
-        result: roll.total,
-      });
-      result.isSuccess = true;
-
-    return result;
-  }
-
   static async sendAttackRoll({
     parts = [],
     data = {},
@@ -174,7 +148,6 @@ export class TyoaDice {
     speaker = null,
     form = null,
     rollTitle = null,
-    dmgTitle = null
   } = {}) {
     const template = "systems/tyoa/templates/chat/roll-attack.html";
 
@@ -189,14 +162,12 @@ export class TyoaDice {
       data: data,
       config: CONFIG.TYOA,
       rollTitle: rollTitle,
-      dmgTitle: dmgTitle
     };
 
     // Optionally include a situational bonus
     if (form !== null && form.bonus.value) parts.push(form.bonus.value);
 
     const roll = new Roll(parts.join("+"), data).roll({async: false});
-    const dmgRoll = new Roll(data.roll.dmg.join("+"), data).roll({async: false});
 
     // Convert the roll to a chat message and return the roll
     let rollMode = game.settings.get("core", "rollMode");
@@ -215,51 +186,32 @@ export class TyoaDice {
       data.roll.blindroll = true;
     }
 
-    templateData.result = TyoaDice.digestAttackResult(data, roll);
+    templateData.result = {total: roll.total};
 
     return new Promise((resolve) => {
       roll.render().then((r) => {
         templateData.rollTYOA = r;
-        dmgRoll.render().then((dr) => {
-          templateData.rollDamage = dr;
-          renderTemplate(template, templateData).then((content) => {
-            chatData.content = content;
-            // 2 Step Dice So Nice
-            if (game.dice3d) {
-              game.dice3d
-                .showForRoll(
-                  roll,
-                  game.user,
-                  true,
-                  chatData.whisper,
-                  chatData.blind
-                )
-                .then(() => {
-                  if (templateData.result.isSuccess) {
-                    templateData.result.dmg = dmgRoll.total;
-                    game.dice3d
-                      .showForRoll(
-                        dmgRoll,
-                        game.user,
-                        true,
-                        chatData.whisper,
-                        chatData.blind
-                      )
-                      .then(() => {
-                        ChatMessage.create(chatData);
-                        resolve(roll);
-                      });
-                  } else {
-                    ChatMessage.create(chatData);
-                    resolve(roll);
-                  }
-                });
-            } else {
-              chatData.sound = CONFIG.sounds.dice;
-              ChatMessage.create(chatData);
-              resolve(roll);
-            }
-          });
+        renderTemplate(template, templateData).then((content) => {
+          chatData.content = content;
+          // 2 Step Dice So Nice
+          if (game.dice3d) {
+            game.dice3d
+              .showForRoll(
+                roll,
+                game.user,
+                true,
+                chatData.whisper,
+                chatData.blind
+              )
+              .then(() => {
+                ChatMessage.create(chatData);
+                resolve(roll);
+              });
+          } else {
+            chatData.sound = CONFIG.sounds.dice;
+            ChatMessage.create(chatData);
+            resolve(roll);
+          }
         });
       });
     });
@@ -333,7 +285,6 @@ export class TyoaDice {
     flavor = null,
     title = null,
     rollTitle = null,
-    dmgTitle = null,
   } = {}) {
     let rolled = false;
     const template = "systems/tyoa/templates/chat/roll-dialog.html";
@@ -351,7 +302,6 @@ export class TyoaDice {
       flavor: flavor,
       speaker: speaker,
       rollTitle: rollTitle,
-      dmgTitle: dmgTitle
     };
     if (skipDialog) {
       return ["melee", "missile", "attack"].includes(data.roll.type)

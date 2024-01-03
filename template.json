@@ -7,11 +7,7 @@
           "enabled": false,
           "wage": ""
         },
-        "aacm": {
-          "value": 0,
-          "mod": 0
-        },
-        "aacr": {
+        "armor": {
           "value": 0,
           "mod": 0
         },
@@ -40,6 +36,10 @@
           "name": "",
           "value": 0,
           "max": 0
+        },
+        "stress": {
+          "value": 0,
+          "max": 1
         }
       }
     },
@@ -59,10 +59,6 @@
           "value": 16,
           "spent": 0,
           "unspent": 16
-        },
-        "stress": {
-          "value": 0,
-          "max": 1
         },
         "injuries": {
           "value": 0,
@@ -219,14 +215,7 @@
     "pattern": "transparent",
     "description": "",
     "damage": "1d6",
-    "characterBonus": 0,
-    "weaponBonus": 0,
-    "skillDamage": false,
-    "shock": {
-      "damage": "1",
-      "ac": "15"
-    },
-    "shockTotal": 0,
+    "skillDamage": true,
     "skill": "fighting",
     "tags": [],
     "slow": false,
@@ -246,8 +235,8 @@
   },
   "armor": {
     "description": "",
-    "aac": {
-      "value": 10,
+    "armor": {
+      "value": 1,
       "mod": 0 },
     "armorBonus": 0,
     "type": "light",

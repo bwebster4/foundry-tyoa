@@ -21,30 +21,6 @@
                 <div class="roll-result">{{{result.details}}}</div>
             </div>
             {{#if rollTYOA}}<div title="{{rollTitle}}">{{{rollTYOA}}}</div>{{/if}}
-            {{#if result.isSuccess}}
-            <div class="chat-details">
-                <div class="roll-result"><b>{{localize 'TYOA.messages.InflictsDamage'}}</b></div>
-            </div>
-            <div class="damage-roll" title="{{dmgTitle}}">{{{rollDamage}}}</div>
-            {{/if}}
-            {{#if (nt data.item.system.shock.damage null)}}
-            {{#if data.item.system.shock.ac}}
-            <div class="chat-details shock-message">
-                <div class="roll-result"><b>{{localize 'TYOA.messages.applyShock1'}}
-                    <span class="dice-total">{{data.item.system.shockTotal}}</span>
-                    {{localize 'TYOA.messages.applyShock2'}}{{data.item.system.shock.ac}}</b>
-                </div>
-            </div>
-            {{/if}}
-            {{#unless data.item.system.shock.ac}}
-            <div class="chat-details shock-message">
-                <div class="roll-result"><b>{{localize 'TYOA.messages.applyShock1'}}
-                    <span class="dice-total">{{data.item.system.shockTotal}}</span>
-                    {{localize 'TYOA.messages.applyShockAlt'}}</b>
-                </div>
-            </div>
-            {{/unless}}
-            {{/if}}
             {{#if data.roll.save}}
             <div class="card-buttons">
                 <button data-action="save" data-save="{{data.roll.save}}">

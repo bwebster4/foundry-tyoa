@@ -74,18 +74,6 @@
               </select>
             </div>
           </div>
-          <div class="form-group">
-            <label>{{localize 'TYOA.items.CharacterBonus'}}</label>
-            <div class="form-fields">
-              <input type="number" name="system.characterBonus" value="{{system.characterBonus}}" data-dtype="Number" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>{{localize 'TYOA.items.WeaponBonus'}}</label>
-            <div class="form-fields">
-              <input type="number" name="system.weaponBonus" value="{{system.weaponBonus}}" data-dtype="Number" />
-            </div>
-          </div>
           {{#if system.missile}}
           <div class="form-group">
             <label>{{localize 'TYOA.items.Range'}}</label>
@@ -101,16 +89,6 @@
             <label>{{localize 'TYOA.items.Damage'}}</label>
             <div class="form-fields">
               <input type="text" name="system.damage" value="{{system.damage}}" data-dtype="String" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>{{localize 'TYOA.items.Shock'}}</label>
-            <div class="form-fields">
-              <input type="number" name="system.shock.damage" value="{{system.shock.damage}}" data-dtype="Number"
-                placeholder="{{localize 'TYOA.items.Damage'}}" title="{{localize 'TYOA.items.ShockDamage'}}" />
-              /
-              <input type="number" name="system.shock.ac" value="{{system.shock.ac}}" data-dtype="String"
-                placeholder="{{localize 'TYOA.items.ArmorAC'}}" title="{{localize 'TYOA.items.ShockAC'}}" />
             </div>
           </div>
           <div class="form-group">
